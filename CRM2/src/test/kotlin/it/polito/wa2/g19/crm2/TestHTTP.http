@@ -1,0 +1,215 @@
+### Create a new customer
+POST http://localhost:8080/API/customers/
+Content-Type: application/json
+
+{
+  "contact": {
+    "name": "John",
+    "surname": "Doe",
+    "category": "CUSTOMER",
+    "emails": [],
+    "addresses": [],
+    "telephones": []
+  },
+  "notes": [
+    "Note 1",
+    "Note 2"
+  ],
+  "jobOffers": []
+}
+> {% client.global.set("customerId", response.body.id) %}
+
+### Get customer by id
+GET http://localhost:8080/API/customers/{{customerId}}
+
+### Get all customers
+GET http://localhost:8080/API/customers/
+
+### Update Customer Notes
+PUT http://localhost:8080/API/customers/{{customerId}}/notes
+Content-Type: application/json
+
+[
+  "This is the first note",
+  "This is the second note",
+  "This is the third note"
+]
+
+### Get customer by id --> fail because customer not found
+GET http://localhost:8080/API/customers/7
+
+### Create a new professional
+POST http://localhost:8080/API/professionals/
+Content-Type: application/json
+
+{
+  "contact": {
+    "name": "Jane",
+    "surname": "Austen",
+    "category": "PROFESSIONAL",
+    "emails": [],
+    "addresses": [],
+    "telephones": []
+  },
+"notes": ["Note 1", "Note 2"],
+"skills": ["Skill 1", "Skill 2"],
+"dailyRate": 10.0,
+"employmentState": "AVAILABLE_FOR_WORK",
+"location": "Turin"
+}
+> {% client.global.set("professionalId", response.body.id) %}
+
+
+### Update Professional
+PUT http://localhost:8080/API/professionals/{{professionalId}}
+Content-Type: application/json
+
+{
+  "contact": {
+    "name": "John",
+    "surname": "Doe",
+    "category": "PROFESSIONAL",
+    "emails": [],
+    "addresses": [],
+    "telephones": []
+  },
+  "notes": [
+    "Note 1",
+    "Note 2"
+  ],
+  "skills": [
+    "Skill 1",
+    "Skill 2"
+  ],
+  "dailyRate": 100.0,
+  "employmentState": "AVAILABLE_FOR_WORK",
+  "location": "Turin"
+}
+
+### Get the list of professionals with pagination without filters
+GET http://localhost:8080/API/professionals/?page=0&size=10
+
+### Get the list of professionals with pagination and location filter
+GET http://localhost:8080/API/professionals/?page=0&size=10&location=Turin
+
+### Get the list of professionals with pagination and employment state filter
+GET http://localhost:8080/API/professionals/?page=0&size=10&employmentState=AVAILABLE_FOR_WORK
+
+### Get the list of professionals with pagination and skills filter -> empty result
+GET http://localhost:8080/API/professionals/?page=0&size=10&skills=java
+
+### Get professional by id
+GET http://localhost:8080/API/professionals/{{professionalId}}
+
+### Create job offer
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json
+
+{
+  "description": "Job offer description",
+  "duration": 730,
+  "customerId": {{customerId}}
+}
+
+> {% client.global.set("jobOfferId", response.body.id) %}
+
+### Create job offer -> invalid because customer not found
+POST http://localhost:8080/API/joboffers/
+Content-Type: application/json
+
+{
+  "description": "Job offer 2 description",
+  "duration": 365,
+  "customerId": 9
+}
+
+### Get list of job offers with pagination
+GET http://localhost:8080/API/joboffers/?page=0&size=10
+
+### Get list of job offers with pagination and customer filter
+GET http://localhost:8080/API/joboffers/?page=0&size=10&customerId={{customerId}}
+
+### Get list of job offers with pagination and status filter -> empty result
+GET http://localhost:8080/API/joboffers/?page=0&size=10&status=SELECTION_PHASE
+
+### GET open job offers for a customer with pagination
+GET http://localhost:8080/API/joboffers/open/{{customerId}}?page=0&size=10
+
+### GET accepted job offers for a professional with pagination
+GET http://localhost:8080/API/joboffers/accepted/{{professionalId}}?page=0&size=10
+
+### GET aborted job offers
+GET http://localhost:8080/API/joboffers/aborted/?page=0&size=10
+
+### GET aborted job offers filtered by customer
+GET http://localhost:8080/API/joboffers/aborted/?page=0&size=10&customerId={{customerId}}
+
+### GET aborted job offers filtered by professional
+GET http://localhost:8080/API/joboffers/aborted/?page=0&size=10&professionalId={{professionalId}}
+
+### GET aborted job offers filtered by customer and professional
+GET http://localhost:8080/API/joboffers/aborted/?page=0&size=10&professionalId={{professionalId}}&customerId={{customerId}}
+
+### Post a new status
+POST http://localhost:8080/API/joboffers/{{jobOfferId}}
+Content-Type: application/json
+
+{
+  "status": "SELECTION_PHASE",
+  "notes": ["Good candidate"]
+}
+
+### Get job offer value by id -> professional not assigned
+GET http://localhost:8080/API/joboffers/{{jobOfferId}}/value
+
+### Post a new status
+POST http://localhost:8080/API/joboffers/{{jobOfferId}}
+Content-Type: application/json
+
+{
+  "status": "CANDIDATE_PROPOSAL",
+  "notes": ["Good candidate"]
+}
+
+### Post a new status with notes and professional
+POST http://localhost:8080/API/joboffers/{{jobOfferId}}
+Content-Type: application/json
+
+{
+  "status": "CONSOLIDATED",
+  "notes": ["Notes"],
+  "professionalId": 1
+}
+
+### Get list of job offers with pagination and professional filter
+GET http://localhost:8080/API/joboffers/?page=0&size=10&professionalId={{professionalId}}
+
+### Get list of job offers with pagination and some filter
+GET http://localhost:8080/API/joboffers/?page=0&size=10&customerId={{customerId}}&status=CONSOLIDATED
+
+### Post a new status but job offer not found
+POST http://localhost:8080/API/joboffers/100
+Content-Type: application/json
+
+{
+    "status": "SELECTION_PHASE",
+    "notes": ["Good candidate"]
+}
+
+### Post a new status but it's not possible to change the status
+POST http://localhost:8080/API/joboffers/{{jobOfferId}}
+Content-Type: application/json
+
+{
+  "status": "CANDIDATE_PROPOSAL",
+  "notes": ["Good candidate"]
+}
+
+### Get job offer value by id
+GET http://localhost:8080/API/joboffers/{{jobOfferId}}/value
+
+### Get job offer value by id but job offer not found
+GET http://localhost:8080/API/joboffers/100/value
+
+
+

@@ -1,0 +1,19 @@
+### Send an email
+POST http://localhost:8081/API/emails/
+Content-Type: application/json
+
+{
+  "recipient": "daniele.dr00@gmail.com",
+  "subject": "test",
+  "body": "test body"
+}
+
+### Send an email with invalid recipient
+POST http://localhost:8081/API/emails/
+Content-Type: application/json
+
+{
+  "recipient": "testerror#mail.com",
+  "subject": "test",
+  "body": "test body"
+}

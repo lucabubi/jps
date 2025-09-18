@@ -1,0 +1,16 @@
+services:
+  communication_manager:
+    image: g19/communication_manager
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - crm2
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=mydatabase
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=secret
+    ports:
+      - "5556:5432"

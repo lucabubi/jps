@@ -1,0 +1,144 @@
+{
+  "realm": "kc1",
+  "enabled": true,
+  "clients": [
+    {
+      "clientId": "kc1client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "K5N59toSW1sKyJLgVVoWmqMbhhOpeIpx",
+      "redirectUris": [
+        "http://localhost:8083/login/oauth2/code/kc1client",
+        "http://localhost:3000/"
+      ],
+      "defaultClientScopes": ["web-origins", "role_list", "openid"],
+      "optionalClientScopes": ["address", "phone"],
+      "directAccessGrantsEnabled": false,
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String",
+            "user.attribute": "username"
+          }
+        },
+        {
+          "name": "name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "name",
+            "jsonType.label": "String",
+            "user.attribute": "name"
+          }
+        },
+        {
+          "name": "given_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "given_name",
+            "jsonType.label": "String",
+            "user.attribute": "firstName"
+          }
+        },
+        {
+          "name": "family_name",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "family_name",
+            "jsonType.label": "String",
+            "user.attribute": "lastName"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "testoperator",
+      "enabled": true,
+      "email": "testoeprator@email.com",
+      "firstName": "Test",
+      "lastName": "Operator",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testoperatorpassword"
+        }
+      ],
+      "realmRoles": ["operator"]
+    },
+    {
+      "username": "testcustomer",
+      "enabled": true,
+      "email": "testcustomer@email.com",
+      "firstName": "Test",
+      "lastName": "Customer",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testcustomerpassword"
+        }
+      ],
+      "realmRoles": ["customer"]
+    },
+    {
+      "username": "testprofessional",
+      "enabled": true,
+      "email": "testprofessional@email.com",
+      "firstName": "Test",
+      "lastName": "Professional",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testprofessionalpassword"
+        }
+      ],
+      "realmRoles": ["professional"]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "operator"
+      },
+      {
+        "name": "customer"
+      },
+      {
+        "name": "professional"
+      }
+    ]
+  }
+}
