@@ -25,7 +25,3 @@ Set-Location -Path "../../"
 
 # Run docker-compose
 docker-compose -f gatewayAPI/compose.yaml -f CRM2/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
-
-# Eventually Re-run gateway_api service if it fails, beacasue it needs that keycloak is up and running completely
-
-# After, navigate to ui directory -> npm install -> npm run dev
