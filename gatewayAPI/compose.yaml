@@ -4,13 +4,12 @@ services:
     restart: always
     ports:
       - "8083:8083"
+    env_file:
+      - ../.env
     depends_on:
       - keycloak
   keycloak:
     image: keycloak/keycloak:latest
-    environment:
-      - KEYCLOAK_ADMIN=admin
-      - KEYCLOAK_ADMIN_PASSWORD=password
     command: >
       start-dev
       --import-realm
@@ -18,3 +17,5 @@ services:
       - ./keycloak-config:/opt/keycloak/data/import
     ports:
       - "9090:8080"
+    env_file:
+      - ../.env
