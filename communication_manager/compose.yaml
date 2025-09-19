@@ -8,7 +8,6 @@ services:
     depends_on:
       - postgres
       - crm
-    platform: "linux/amd64"
 
   postgres:
     image: postgres:latest
@@ -18,7 +17,6 @@ services:
       - ../.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    platform: "linux/amd64"
 
 volumes:
   postgres_data:
