@@ -4,11 +4,11 @@ Set-Location -Path "./gatewayAPI"
 # Build the gatewayAPI image
 ./gradlew bootBuildImage --imageName=g19/gateway_api
 
-# Navigate to CRM2 directory
-Set-Location -Path "../CRM2"
+# Navigate to CRM directory
+Set-Location -Path "../CRM"
 
-# Build the CRM2 image
-./gradlew bootBuildImage --imageName=g19/crm2
+# Build the CRM image
+./gradlew bootBuildImage --imageName=g19/crm
 
 # Navigate to communication_manager directory
 Set-Location -Path "../communication_manager"
@@ -24,4 +24,4 @@ docker build -t g19/user-interface .
 Set-Location -Path "../../"
 
 # Run docker-compose
-docker-compose -f gatewayAPI/compose.yaml -f CRM2/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up

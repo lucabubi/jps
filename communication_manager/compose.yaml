@@ -7,7 +7,7 @@ services:
       - ../.env
     depends_on:
       - postgres
-      - crm2
+      - crm
 
   postgres:
     image: postgres:latest
