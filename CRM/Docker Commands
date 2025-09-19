@@ -1,0 +1,7 @@
+// Commands to build and run the application
+
+// TO RUN TESTCONTAINERS TESTS DOCKER IMAGE MUST BE UP AND RUNNING
+
+./gradlew bootBuildImage --imageName=g19/crm
+
+docker-compose -f compose.yaml up
