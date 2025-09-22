@@ -1,10 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import App from "@/routes/App"
+import {AuthProvider} from "@/hooks/useAuth.tsx";
 import './index.css'
-import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
+    <StrictMode>
+        <div className="relative flex flex-col h-screen w-screen overflow-hidden">
+            <AuthProvider>
+                <App />
+            </AuthProvider>
+        </div>
+    </StrictMode>,
 )
