@@ -13,7 +13,7 @@ interface UserOuterInterface {
 interface UserInnerInterface {
     name: string,
     fullName: string,
-    principal: any,
+    principal: object,
     xsrfToken: string,
     roles: string[],
 }
