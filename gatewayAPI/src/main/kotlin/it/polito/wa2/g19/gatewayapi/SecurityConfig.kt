@@ -15,7 +15,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
 
     // Configura il logout per reindirizzare a una pagina dopo il logout
     fun oidcLogoutSuccessHandler() = OidcClientInitiatedLogoutSuccessHandler(crr)
-        .also { it.setPostLogoutRedirectUri("http://localhost:3000/") }
+        .also { it.setPostLogoutRedirectUri("http://localhost:3000/landing") }
 
     // Configura il successo del login
     fun oauth2AuthenticationSuccessHandler(): AuthenticationSuccessHandler {

@@ -1,15 +1,21 @@
-import { useState, createContext, useContext, useEffect, useMemo, ReactNode } from 'react';
+import { useState, createContext, useContext, useCallback, useEffect, useMemo, ReactNode } from 'react';
 import { fetchUser } from "@/lib/API";
 import { toast } from "sonner";
 
-// Interface representing the user data structure
-interface UserInterface {
-    name: string,
-    fullName: string,
+// Interface wrapper for user data
+interface UserOuterInterface {
     loginUrl: string,
     logoutUrl: string,
-    principal: never | null,
-    xsrfToken: string
+    userData: UserInnerInterface | null
+}
+
+// Interface representing the user data structure
+interface UserInnerInterface {
+    name: string,
+    fullName: string,
+    principal: object,
+    xsrfToken: string,
+    roles: string[],
 }
 
 // Interface representing the user context
@@ -18,26 +24,9 @@ interface AuthContextInterface {
     isCustomer: boolean;
     isProfessional: boolean;
     isOperator: boolean;
-    userData: UserInterface | null;
+    userData: UserInnerInterface | null;
     handleLogin: () => Promise<void>;
     handleLogout: () => Promise<void>;
-}
-
-async function handleLogin() {
-    window.location.href = "http://localhost:8083/secure";
-}
-
-async function handleLogout() {
-    try {
-        // Call the backend logout endpoint giving cookies
-        await fetch(`http://localhost:8083/logout`, {
-            method: 'POST',
-            credentials: 'include',
-        });
-        window.location.href = 'http://localhost:8083/logout';
-    } catch {
-        toast.error("Error during logout process.");
-    }
 }
 
 // Context for handling user info and user-related functions
@@ -47,8 +36,8 @@ const AuthContext = createContext<AuthContextInterface>({
     isProfessional: false,
     isOperator: false,
     userData: null,
-    handleLogin,
-    handleLogout,
+    handleLogin: async () => {},
+    handleLogout: async () => {}
 });
 
 function useAuth(): AuthContextInterface {
@@ -61,28 +50,60 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const [isCustomer, setIsCustomer] = useState(false);
     const [isProfessional, setIsProfessional] = useState(false);
     const [isOperator, setIsOperator] = useState(false);
-    const [userData, setUserData] = useState<UserInterface | null>(null);
+    const [user, setUser] = useState<UserOuterInterface | null>(null);
+    const [userData, setUserData] = useState<UserInnerInterface | null>(null);
 
+    // need rewrite
     useEffect(() => {
         const checkAuth = async () => {
             try {
-                const user: UserInterface | null = await fetchUser();
-                if (!user) {
-                    setIsAuthenticated(false);
-                    return;
-                }
-                // setIsCustomer(user.roles.includes("customer"));
-                // setIsProfessional(user.roles.includes("professional"));
-                // setIsOperator(user.roles.includes("operator"));
-                setUserData(user);
-                setIsAuthenticated(true);
+                const fetchedUser: UserOuterInterface | null = await fetchUser();
+                if (fetchedUser != null) {
+                    setUser(fetchedUser);
+                    if (fetchedUser.userData) {
+                        setIsAuthenticated(true);
+                        setUserData(fetchedUser.userData);
+                        setIsCustomer(fetchedUser.userData.roles.includes("customer"));
+                        setIsProfessional(fetchedUser.userData.roles.includes("professional"));
+                        setIsOperator(fetchedUser.userData.roles.includes("operator"));
+                        toast.success("User authenticated successfully.");
+                    } else {
+                        setIsCustomer(false);
+                        setIsProfessional(false);
+                        setIsOperator(false);
+                        setIsAuthenticated(false);
+                    }
+                } else throw new Error("Failed to fetch user data.");
             } catch {
+                setIsCustomer(false);
+                setIsProfessional(false);
+                setIsOperator(false);
                 setIsAuthenticated(false);
+                setUser(null);
+                setUserData(null);
                 toast.error("Authentication-related functionalities are not available.");
             }
         };
         checkAuth();
     }, []);
+
+    const handleLogin = useCallback(async () => {
+        const url = user?.loginUrl ? 'http://localhost:8083' + user.loginUrl : null;
+        if (!url) {
+            toast.error("Login URL not available.");
+            return;
+        }
+        window.location.href = url;
+    }, [user]);
+
+    const handleLogout = useCallback(async () => {
+        const url = user?.logoutUrl ? 'http://localhost:8083' + user.logoutUrl : null;
+        if (!url) {
+            toast.error("Logout URL not available.");
+            return;
+        }
+        window.location.href = url;
+    }, [user]);
 
     // Memorize the context value
     const contextValue: AuthContextInterface = useMemo(() => ({
@@ -93,7 +114,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         userData,
         handleLogin,
         handleLogout
-    }), [isAuthenticated, userData, isCustomer, isProfessional, isOperator]);
+    }), [isAuthenticated, userData, isCustomer, isProfessional, isOperator, handleLogin, handleLogout]);
 
     return (
         <AuthContext.Provider value={contextValue}>
@@ -102,5 +123,5 @@ function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export type { UserInterface };
+export type { UserOuterInterface, UserInnerInterface };
 export { AuthProvider, useAuth };
