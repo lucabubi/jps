@@ -16,6 +16,6 @@ services:
     volumes:
       - ./keycloak-config:/opt/keycloak/data/import
     ports:
-      - "9090:8080"
+      - "127.0.0.1:9090:8080"
     env_file:
       - ../.env

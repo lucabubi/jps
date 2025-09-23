@@ -26,4 +26,4 @@ cd ".."
 cd ".."
 
 # Run docker-compose
-docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
