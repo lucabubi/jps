@@ -66,6 +66,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
                         setIsCustomer(fetchedUser.userData.roles.includes("customer"));
                         setIsProfessional(fetchedUser.userData.roles.includes("professional"));
                         setIsOperator(fetchedUser.userData.roles.includes("operator"));
+                        toast.success("User authenticated successfully.");
                     } else {
                         setIsCustomer(false);
                         setIsProfessional(false);

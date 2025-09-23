@@ -10,7 +10,8 @@ function App() {
         <Router>
                 <Routes>
                     <Route path="/landing" element={ <Landing /> } />
-                    <Route path="/" element={<Homepage />} />
+                    { /*<Route path="/*" element={  } /> */}
+                    <Route path="/" element={<Homepage /> } />
                     { /*<Route path="/settings" element={ } /> */}
                 </Routes>
         </Router>
