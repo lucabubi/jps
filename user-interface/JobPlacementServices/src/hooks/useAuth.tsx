@@ -1,4 +1,6 @@
 import { useState, createContext, useContext, useCallback, useEffect, useMemo, ReactNode } from 'react';
+import { Navigate } from "react-router-dom";
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 import { fetchUser } from "@/lib/API";
 import { toast } from "sonner";
 
@@ -20,6 +22,7 @@ interface UserInnerInterface {
 
 // Interface representing the user context
 interface AuthContextInterface {
+    isLoading: boolean;
     isAuthenticated: boolean;
     isCustomer: boolean;
     isProfessional: boolean;
@@ -31,6 +34,7 @@ interface AuthContextInterface {
 
 // Context for handling user info and user-related functions
 const AuthContext = createContext<AuthContextInterface>({
+    isLoading: true,
     isAuthenticated: false,
     isCustomer: false,
     isProfessional: false,
@@ -45,6 +49,7 @@ function useAuth(): AuthContextInterface {
 }
 
 function AuthProvider({ children }: { children: ReactNode }) {
+    const [isLoading, setIsLoading] = useState(true);
     // Keep track in the client of user role and user data
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isCustomer, setIsCustomer] = useState(false);
@@ -53,9 +58,10 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<UserOuterInterface | null>(null);
     const [userData, setUserData] = useState<UserInnerInterface | null>(null);
 
-    // need rewrite
     useEffect(() => {
         const checkAuth = async () => {
+            setIsLoading(true);
+            toast.info("Checking for a valid authentication cookie just for you...");
             try {
                 const fetchedUser: UserOuterInterface | null = await fetchUser();
                 if (fetchedUser != null) {
@@ -82,6 +88,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
                 setUser(null);
                 setUserData(null);
                 toast.error("Authentication-related functionalities are not available.");
+            } finally {
+                setIsLoading(false);
             }
         };
         checkAuth();
@@ -107,6 +115,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
     // Memorize the context value
     const contextValue: AuthContextInterface = useMemo(() => ({
+        isLoading,
         isAuthenticated,
         isCustomer,
         isProfessional,
@@ -114,7 +123,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         userData,
         handleLogin,
         handleLogout
-    }), [isAuthenticated, userData, isCustomer, isProfessional, isOperator, handleLogin, handleLogout]);
+    }), [isLoading, isAuthenticated, userData, isCustomer, isProfessional, isOperator, handleLogin, handleLogout]);
 
     return (
         <AuthContext.Provider value={contextValue}>
@@ -123,5 +132,21 @@ function AuthProvider({ children }: { children: ReactNode }) {
     );
 }
 
+function Authenticated({ children }: { children: ReactNode }) {
+    const { isAuthenticated, isLoading } = useAuth();
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-screen items-center justify-center bg-background">
+                <Spinner variant="infinite" color="var(--primary)" />
+            </div>
+        )
+    }
+    if (!isAuthenticated) {
+        toast.error(<>Requested resource needs authentication!<br/>You have been redirected to the Landing page.</>);
+        return <Navigate to="/" replace />;
+    }
+    return <>{children}</>;
+}
+
 export type { UserOuterInterface, UserInnerInterface };
-export { AuthProvider, useAuth };
+export { AuthProvider, useAuth, Authenticated };
