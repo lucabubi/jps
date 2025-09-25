@@ -27,7 +27,7 @@ export default function ThemeSwitch() {
             variant="ghost"
             size="icon"
             onClick={toggleTheme}
-            className="p-0 w-[2.0rem] h-[2.0rem] absolute top-6 right-8 overflow-hidden hover:bg-transparent hover:shadow-none focus:bg-transparent focus:shadow-none"
+            className="p-0 w-[2.0rem] h-[2.0rem] fixed top-6 right-8 overflow-hidden hover:bg-transparent hover:shadow-none focus:bg-transparent focus:shadow-none"
         >
             <Sun
                 className={`absolute inset-0 w-full h-full origin-center transition-transform duration-500 ease-in-out

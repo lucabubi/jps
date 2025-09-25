@@ -5,7 +5,7 @@ export function Dashboard() {
     const { handleLogout, isAuthenticated } = useAuth();
 
     return (
-        <div>
+        <div className="h-screen w-full">
             { isAuthenticated && <Button onClick={handleLogout}>Logout</Button> }
         </div>
     );

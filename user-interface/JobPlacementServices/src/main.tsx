@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
             <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
                 <AuthProvider>
-                    <div className="relative flex flex-col h-screen w-screen overflow-hidden">
+                    <div className="w-full h-full antialiased">
                         <App />
                         <Toaster richColors position="bottom-right" />
                     </div>
