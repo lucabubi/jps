@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, useCallback, useEffect, useMemo, ReactNode } from 'react';
 import { Navigate } from "react-router-dom";
-import { Spinner } from '@/components/ui/shadcn-io/spinner';
+import { Spinner } from '@/components/ui/shadcn-io/spinner/spinner.tsx';
 import { fetchUser } from "@/lib/API";
 import { toast } from "sonner";
 
