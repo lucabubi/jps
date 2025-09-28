@@ -20,7 +20,9 @@ function Landing() {
 
     return (
         <div>
-            <LandingBanner />
+            <div className="sticky top-0 z-50">
+                <LandingBanner/>
+            </div>
             <div className="relative min-w-[375px] h-full bg-gradient-to-b from-white via-purple-100 to-purple-300 dark:from-black dark:via-black dark:to-purple-950">
                 <div className="relative h-full w-full items-center justify-center">
                     <div className="relative z-10 flex flex-col items-center justify-center w-full min-h-screen pointer-events-auto">
@@ -83,7 +85,7 @@ function Landing() {
             <div className="w-full h-full">
                 < div className="mx-8 my-8 md:mx-12">
                 <TextPressure
-                    text="Built with ❤ by Luca & Daniele"
+                    text="Built by Luca & Daniele"
                     flex={true}
                     alpha={false}
                     stroke={false}
