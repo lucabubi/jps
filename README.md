@@ -8,8 +8,8 @@ Into CRM directory
 Into communication_manager directory
 [sudo] ./gradlew bootBuildImage --imageName=g19/communication_manager
 
-Into external lab5-g19 directory
-docker-compose -f CRM2/compose.yaml -f communication_manager/compose.yaml up
+Into external directory
+docker-compose -f CRM/compose.yaml -f communication_manager/compose.yaml up
 
 or, alternatively, if you're using windows just run the following command in the external directory: ./start.ps1
 

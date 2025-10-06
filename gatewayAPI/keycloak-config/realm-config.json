@@ -10,8 +10,11 @@
       "secret": "K5N59toSW1sKyJLgVVoWmqMbhhOpeIpx",
       "redirectUris": [
         "http://localhost:8083/login/oauth2/code/kc1client",
-        "http://localhost:3000/"
+        "http://localhost:3000/dashboard"
       ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:3000/"
+      },
       "defaultClientScopes": ["web-origins", "role_list", "openid"],
       "optionalClientScopes": ["address", "phone"],
       "directAccessGrantsEnabled": false,

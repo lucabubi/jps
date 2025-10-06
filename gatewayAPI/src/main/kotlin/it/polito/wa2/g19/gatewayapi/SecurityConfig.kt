@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 @Configuration
 class SecurityConfig(val crr: ClientRegistrationRepository) {
 
-    // Configura il logout per reindirizzare a una pagina dopo la logout
+    // Configura il logout per reindirizzare a una pagina dopo il logout
     fun oidcLogoutSuccessHandler() = OidcClientInitiatedLogoutSuccessHandler(crr)
         .also { it.setPostLogoutRedirectUri("http://localhost:3000/") }
 
@@ -21,7 +21,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     fun oauth2AuthenticationSuccessHandler(): AuthenticationSuccessHandler {
         return AuthenticationSuccessHandler { _, response, _ ->
             // Reindirizza a una pagina del frontend dopo il login
-            response.sendRedirect("http://localhost:3000/") // Modifica con la tua URL di destinazione
+            response.sendRedirect("http://localhost:3000/dashboard")
         }
     }
 
@@ -39,7 +39,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
             }
             .logout { logout ->
                 logout.logoutSuccessHandler(oidcLogoutSuccessHandler()) // Gestisci il logout
-                logout.permitAll()  // Make sure the logout URL is publicly accessible
+                logout.permitAll()
             }
             .build()
     }
@@ -49,10 +49,10 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
 class WebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000") // Modifica con il tuo dominio frontend
+            .allowedOrigins("http://localhost:3000")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
-            .allowCredentials(true)  // Consente di inviare cookie di autenticazione
+            .allowCredentials(true)
     }
 }
 
