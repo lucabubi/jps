@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: communication-manager
+
+  datasource:
+    url: ${DB_URL}
+    username: ${POSTGRES_USERNAME}
+    password: ${POSTGRES_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  security:
+    oauth2:
+      jwt:
+        issuer-uri: ${ISSUER_URI}
+        jwk-set-uri: ${JWK_SET_URI}
+
+gmail:
+  application_name: ${GMAIL_APPLICATION_NAME}
+  client_id: ${GMAIL_CLIENT_ID}
+  client_secret: ${GMAIL_CLIENT_SECRET}
+  refresh-token: ${GMAIL_REFRESH_TOKEN}
+
+camel:
+  component:
+    google-mail-stream:
+      application-name: ${gmail.application-name}
+      client-id: ${gmail.client-id}
+      client-secret: ${gmail.client-secret}
+      refresh-token: ${gmail.refresh-token}
+    google-mail:
+      application-name: ${gmail.application-name}
+      client-id: ${gmail.client-id}
+      client-secret: ${gmail.client-secret}
+      refresh-token: ${gmail.refresh-token}
+
+server:
+  port: 8081
