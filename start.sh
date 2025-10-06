@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Navigate to gatewayAPI directory
+# shellcheck disable=SC2164
 cd "./gatewayAPI"
 
 # Build the gatewayAPI image
@@ -10,6 +11,10 @@ cd "../CRM"
 
 # Build the CRM image
 sudo ./gradlew bootBuildImage --imageName=g19/crm
+
+cd "../document_store"
+# Build the document_store image
+sudo ./gradlew bootBuildImage --imageName=g19/document_store
 
 # Navigate to communication_manager directory
 cd "../communication_manager"
@@ -22,8 +27,9 @@ cd "../user-interface/JobPlacementServices"
 
 # Build the user-interface image
 sudo docker build -t g19/user-interface .
+# shellcheck disable=SC2103
 cd ".."
 cd ".."
 
 # Run docker-compose
-docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f document_store/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
