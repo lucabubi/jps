@@ -1,0 +1,21 @@
+services:
+  gateway_api:
+    image: g19/gateway_api
+    restart: always
+    ports:
+      - "8083:8083"
+    env_file:
+      - ../.env
+    depends_on:
+      - keycloak
+  keycloak:
+    image: keycloak/keycloak:latest
+    command: >
+      start-dev
+      --import-realm
+    volumes:
+      - ./keycloak-config:/opt/keycloak/data/import
+    ports:
+      - "127.0.0.1:9090:8080"
+    env_file:
+      - ../.env
