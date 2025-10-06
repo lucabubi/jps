@@ -5,7 +5,7 @@ import it.polito.wa2.g19.crm.dtos.CreateContactDTO
 import it.polito.wa2.g19.crm.dtos.UpdateContactDTO
 import it.polito.wa2.g19.crm.entities.Category
 import it.polito.wa2.g19.crm.exceptions.InvalidDataException
-import it.polito.wa2.g19.crm.services.CRMService
+import it.polito.wa2.g19.crm.services.ContactService
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator
@@ -21,7 +21,7 @@ private val addressPattern = Regex("^[a-zA-Z0-9,\\-.\\s]+(\\s#\\d+)?$")
 
 @RestController
 @RequestMapping("/API/contacts")
-class ContactsController(private val crmService: CRMService) {
+class ContactController(private val contactService: ContactService) {
     @GetMapping("/")
     fun getContacts(
         @RequestParam(defaultValue = "0") page: Int,
@@ -41,13 +41,13 @@ class ContactsController(private val crmService: CRMService) {
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body(mapOf("error" to "Invalid paging/sorting parameter"))
         }
-        val contacts = crmService.getContacts(pageable, name, surname, email, phoneNumber)
+        val contacts = contactService.getContacts(pageable, name, surname, email, phoneNumber)
         return ResponseEntity.ok(contacts)
     }
 
     @GetMapping("/{contactId}")
     fun getContact(@PathVariable contactId: Long): ResponseEntity<ContactDTO> {
-        val contact = crmService.getContact(contactId)
+        val contact = contactService.getContact(contactId)
         return ResponseEntity.ok(contact)
     }
 
@@ -60,43 +60,43 @@ class ContactsController(private val crmService: CRMService) {
         if (!createContactDTO.addresses.all { addressPattern.matches(it) })
             throw InvalidDataException("Invalid address format!")
 
-        val contactDTO = crmService.createContact(createContactDTO)
+        val contactDTO = contactService.createContact(createContactDTO)
         return ResponseEntity.ok(contactDTO)
     }
 
     @PutMapping("/{contactId}")
     fun updateContact(@PathVariable contactId: Long, @Valid @RequestBody updateContactDTO: UpdateContactDTO): ResponseEntity<ContactDTO> {
-        val updatedContact = crmService.updateContact(contactId, updateContactDTO)
+        val updatedContact = contactService.updateContact(contactId, updateContactDTO)
         return ResponseEntity.ok(updatedContact)
     }
 
     @DeleteMapping("/{contactId}")
     fun deleteContact(@PathVariable contactId: Long): ResponseEntity<String> {
-        crmService.deleteContact(contactId)
+        contactService.deleteContact(contactId)
         return ResponseEntity.ok("Contact with id $contactId deleted")
     }
 
     @PostMapping("/{contactId}/email")
     fun addEmailToContact(@PathVariable contactId: Long, @Email @RequestBody email: String) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.addEmailToContact(contactId,email)
+        val contactDTO = contactService.addEmailToContact(contactId,email)
         return ResponseEntity.ok(contactDTO)
     }
 
     @PutMapping("{contactId}/email/{emailId}")
     fun updateEmail(@PathVariable contactId: Long, @PathVariable emailId: Long, @Email @RequestBody email: String) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.updateEmail(contactId, emailId, email)
+        val contactDTO = contactService.updateEmail(contactId, emailId, email)
         return ResponseEntity.ok(contactDTO)
     }
 
     @DeleteMapping("{contactId}/email/{emailId}")
     fun deleteEmailFromContact(@PathVariable contactId: Long, @PathVariable emailId:  Long) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.deleteEmail(contactId, emailId)
+        val contactDTO = contactService.deleteEmail(contactId, emailId)
         return ResponseEntity.ok(contactDTO)
     }
 
     @PutMapping("{contactId}/category")
     fun updateCategory(@PathVariable contactId: Long, @RequestBody category: Category) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.updateCategory(contactId, category)
+        val contactDTO = contactService.updateCategory(contactId, category)
         return ResponseEntity.ok(contactDTO)
     }
 
@@ -104,7 +104,7 @@ class ContactsController(private val crmService: CRMService) {
     fun addTelephoneToContact(@PathVariable contactId: Long, @RequestBody telephone: String) : ResponseEntity<ContactDTO> {
         if (!phonePattern.matches(telephone))
             throw InvalidDataException("Invalid telephone number!")
-        val contactDTO = crmService.addTelephoneToContact(contactId, telephone)
+        val contactDTO = contactService.addTelephoneToContact(contactId, telephone)
         return ResponseEntity.ok(contactDTO)
     }
 
@@ -112,13 +112,13 @@ class ContactsController(private val crmService: CRMService) {
     fun updateTelephone(@PathVariable contactId: Long, @PathVariable telephoneId: Long, @RequestBody telephone: String) : ResponseEntity<ContactDTO> {
         if (!phonePattern.matches(telephone))
             throw InvalidDataException("Invalid telephone number!")
-        val contactDTO = crmService.updateTelephone(contactId, telephoneId, telephone)
+        val contactDTO = contactService.updateTelephone(contactId, telephoneId, telephone)
         return ResponseEntity.ok(contactDTO)
     }
 
     @DeleteMapping("{contactId}/telephone/{telephoneId}")
     fun deleteTelephone(@PathVariable contactId: Long, @PathVariable telephoneId: Long) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.deleteTelephone(contactId, telephoneId)
+        val contactDTO = contactService.deleteTelephone(contactId, telephoneId)
         return ResponseEntity.ok(contactDTO)
     }
 
@@ -126,13 +126,13 @@ class ContactsController(private val crmService: CRMService) {
     fun addAddressToContact(@PathVariable contactId: Long, @RequestBody address: String) : ResponseEntity<ContactDTO> {
         if (!addressPattern.matches(address))
             throw InvalidDataException("Invalid address format")
-        val contactDTO = crmService.addAddressToContact(contactId, address)
+        val contactDTO = contactService.addAddressToContact(contactId, address)
         return ResponseEntity.ok(contactDTO)
     }
 
     @DeleteMapping("{contactId}/address/{addressId}")
     fun deleteAddressFromContact(@PathVariable contactId: Long, @PathVariable addressId: Long) : ResponseEntity<ContactDTO> {
-        val contactDTO = crmService.deleteAddress(contactId, addressId)
+        val contactDTO = contactService.deleteAddress(contactId, addressId)
         return ResponseEntity.ok(contactDTO)
     }
 
@@ -140,7 +140,7 @@ class ContactsController(private val crmService: CRMService) {
     fun updateAddress(@PathVariable contactId: Long, @PathVariable addressId: Long, @RequestBody address: String) : ResponseEntity<ContactDTO> {
         if (!addressPattern.matches(address))
             throw InvalidDataException("Invalid address format")
-        val contactDTO = crmService.updateAddress(contactId, addressId, address)
+        val contactDTO = contactService.updateAddress(contactId, addressId, address)
         return ResponseEntity.ok(contactDTO)
     }
 }

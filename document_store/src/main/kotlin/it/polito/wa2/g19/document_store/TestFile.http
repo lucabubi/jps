@@ -1,0 +1,77 @@
+### Request all documents
+GET http://localhost:8080/API/documents/
+
+### Request documents at page 1 with 5 items per page
+GET http://localhost:8080/API/documents/?page=1&size=5
+
+### Upload a document
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="prova.pdf"
+Content-Type: application/pdf
+
+< prova.pdf
+--boundary--
+
+> {% client.global.set("uploadedDocumentId", response.body.id); %}
+
+### Upload a existing document => fails because document already exists
+POST http://localhost:8080/API/documents/
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="prova.pdf"
+Content-Type: application/pdf
+
+< prova.pdf
+--boundary--
+
+### Check if the document is now present, retrieving the document metadata by id
+GET http://localhost:8080/API/documents/{{uploadedDocumentId}}
+
+### Retrieving the document metadata by id with an invalid id
+GET http://localhost:8080/API/documents/99
+
+### Download the document data
+GET http://localhost:8080/API/documents/{{uploadedDocumentId}}/data
+
+### Download the document data with an invalid id
+GET http://localhost:8080/API/documents/13/data
+
+### Cannot update a document with same name and content
+PUT http://localhost:8080/API/documents/{{uploadedDocumentId}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="prova.pdf"
+Content-Type: application/pdf
+
+< prova.pdf
+--boundary--
+
+### Update a document
+PUT http://localhost:8080/API/documents/{{uploadedDocumentId}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="Lab1.pdf"
+Content-Type: application/pdf
+
+< Lab1.pdf
+--boundary--
+
+### Delete the document
+DELETE http://localhost:8080/API/documents/{{uploadedDocumentId}}
+
+### Cannot update a document that does not exist
+PUT http://localhost:8080/API/documents/{{uploadedDocumentId}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="file"; filename="prova.pdf"
+Content-Type: application/pdf
+
+< prova.pdf
+--boundary--

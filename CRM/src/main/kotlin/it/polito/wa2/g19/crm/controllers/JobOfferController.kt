@@ -4,21 +4,21 @@ import it.polito.wa2.g19.crm.dtos.CreateJobOfferDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferUpdateDTO
 import it.polito.wa2.g19.crm.entities.JobOffer
-import it.polito.wa2.g19.crm.services.CRMService
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import it.polito.wa2.g19.crm.services.JobOfferService
 
 
 
 @RestController
 @RequestMapping("/API/joboffers")
-class JobOffersController( private val crmService: CRMService) {
+class JobOfferController(private val jobOfferService: JobOfferService) {
 
     @PostMapping("/")
-    fun createJobOffers(@RequestBody createJobOfferDTO: CreateJobOfferDTO) : ResponseEntity<JobOfferDTO> {
-        val newJobOffer = crmService.createJobOffer(createJobOfferDTO)
+    fun createJobOffer(@RequestBody createJobOfferDTO: CreateJobOfferDTO) : ResponseEntity<JobOfferDTO> {
+        val newJobOffer = jobOfferService.createJobOffer(createJobOfferDTO)
         return ResponseEntity.ok(newJobOffer)
     }
 
@@ -31,7 +31,7 @@ class JobOffersController( private val crmService: CRMService) {
         @RequestParam(required = false) professionalId: Long?
     ) : ResponseEntity<List<JobOfferDTO>> {
         val pageable = PageRequest.of(page, size)
-        val jobOffers = crmService.getJobOffers(pageable, customerId, status, professionalId)
+        val jobOffers = jobOfferService.getJobOffers(pageable, customerId, status, professionalId)
         return ResponseEntity.ok(jobOffers)
     }
 
@@ -45,7 +45,7 @@ class JobOffersController( private val crmService: CRMService) {
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body("Invalid page or size")
         }
-        val openJobOffers = crmService.getOpenJobOffers(customerId, pageable)
+        val openJobOffers = jobOfferService.getOpenJobOffers(customerId, pageable)
         return ResponseEntity.ok(openJobOffers)
     }
 
@@ -59,7 +59,7 @@ class JobOffersController( private val crmService: CRMService) {
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body("Invalid page or size")
         }
-        val acceptedJobOffers = crmService.getAcceptedJobOffers(professionalId, pageable)
+        val acceptedJobOffers = jobOfferService.getAcceptedJobOffers(professionalId, pageable)
         return ResponseEntity.ok(acceptedJobOffers)
     }
 
@@ -74,19 +74,19 @@ class JobOffersController( private val crmService: CRMService) {
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body("Invalid page or size")
         }
-        val abortedJobOffers = crmService.getAbortedJobOffers(pageable, customerId, professionalId)
+        val abortedJobOffers = jobOfferService.getAbortedJobOffers(pageable, customerId, professionalId)
         return ResponseEntity.ok(abortedJobOffers)
     }
 
     @PostMapping("/{jobOfferId}")
     fun changeJobOfferStatus(@PathVariable jobOfferId: Long, @RequestBody requestDTO: JobOfferUpdateDTO) : ResponseEntity<JobOfferDTO> {
-        val updateJobOffer = crmService.updateJobOffer(jobOfferId, requestDTO)
+        val updateJobOffer = jobOfferService.updateJobOffer(jobOfferId, requestDTO)
         return ResponseEntity.ok(updateJobOffer)
     }
 
     @GetMapping("/{jobOfferId}/value")
     fun getJobOfferValue(@PathVariable jobOfferId: Long) : ResponseEntity<Float> {
-        val jobOffersValue = crmService.getJobOfferValue(jobOfferId)
+        val jobOffersValue = jobOfferService.getJobOfferValue(jobOfferId)
         return ResponseEntity.ok(jobOffersValue)
     }
 }

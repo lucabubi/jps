@@ -8,7 +8,7 @@ import it.polito.wa2.g19.crm.entities.Channel
 import it.polito.wa2.g19.crm.entities.Priority
 import it.polito.wa2.g19.crm.entities.State
 import it.polito.wa2.g19.crm.exceptions.InvalidDataException
-import it.polito.wa2.g19.crm.services.CRMService
+import it.polito.wa2.g19.crm.services.MessageService
 import jakarta.validation.Valid
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator
 import org.springframework.data.domain.PageRequest
@@ -23,7 +23,7 @@ private val phonePattern = Regex("^\\+?[0-9]{10,12}$")
 
 @RestController
 @RequestMapping("/API/messages")
-class MessagesController(private val crmService: CRMService) {
+class MessageController(private val messageService: MessageService) {
 
     @GetMapping("/")
     fun getMessages(
@@ -48,7 +48,7 @@ class MessagesController(private val crmService: CRMService) {
         } catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body(mapOf("error" to "Invalid paging/sorting parameter"))
         }
-        val messages = crmService.getMessages(pageable, sender, subject, channel, state, priority, from, to)
+        val messages = messageService.getMessages(pageable, sender, subject, channel, state, priority, from, to)
 
         return ResponseEntity.ok(messages)
     }
@@ -61,13 +61,13 @@ class MessagesController(private val crmService: CRMService) {
             && !phonePattern.matches(createMessageDTO.sender))
             throw InvalidDataException("Invalid sender phone number!")
 
-        val message = crmService.createMessage(createMessageDTO)
+        val message = messageService.createMessage(createMessageDTO)
         return ResponseEntity.ok(message)
     }
 
     @GetMapping("/{id}")
     fun getMessage(@PathVariable id: Long) : ResponseEntity<MessageDTO> {
-        val message = crmService.getMessage(id)
+        val message = messageService.getMessage(id)
         return ResponseEntity.ok(message)
     }
 
@@ -76,13 +76,13 @@ class MessagesController(private val crmService: CRMService) {
         @PathVariable id: Long,
         @RequestBody updateMessageDTO: UpdateMessageDTO
     ) : ResponseEntity<String> {
-        crmService.updateState(id, updateMessageDTO)
+        messageService.updateState(id, updateMessageDTO)
         return ResponseEntity.ok("Message with id $id updated")
     }
 
     @GetMapping("/{messageId}/history")
     fun getMessageHistory(@PathVariable messageId: Long): ResponseEntity<List<MessageHistoryDTO>> {
-        return ResponseEntity.ok(crmService.getMessageHistory(messageId))
+        return ResponseEntity.ok(messageService.getMessageHistory(messageId))
     }
 
     @PutMapping("/{messageId}/priority")
@@ -92,7 +92,7 @@ class MessagesController(private val crmService: CRMService) {
         catch (e: IllegalArgumentException) {
             return ResponseEntity.badRequest().body(mapOf("error" to "Invalid priority value"))
         }
-        val updatedMessage = crmService.updateMessagePriority(messageId, newPriority)
+        val updatedMessage = messageService.updateMessagePriority(messageId, newPriority)
         return ResponseEntity.ok(updatedMessage)
     }
 }
