@@ -115,34 +115,22 @@ export function NavUser() {
                 <Settings />
                 Settings
                       {isApple ? (
-                          <>
-                            <DropdownMenuShortcut>⌘</DropdownMenuShortcut>
-                            <DropdownMenuShortcut>S</DropdownMenuShortcut>
-                          </>
+                            <DropdownMenuShortcut>⌘ S</DropdownMenuShortcut>
                       ) : (
-                          <>
-                            <DropdownMenuShortcut>Ctrl</DropdownMenuShortcut>
-                            <DropdownMenuShortcut>S</DropdownMenuShortcut>
-                          </>
+                            <DropdownMenuShortcut>Ctrl S</DropdownMenuShortcut>
                       )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
               <DropdownMenuItem
                   onClick={handleLogout}
-                  className="text-destructive focus:text-destructive data-[highlighted]:bg-destructive/20"
+                  className="text-red-600 focus:text-red-600 data-[highlighted]:bg-destructive/20"
               >
                   <LogOut className="text-red-600" />
                   <span className="text-red-600">Logout</span>
                       {isApple ? (
-                          <>
-                            <DropdownMenuShortcut>⌘</DropdownMenuShortcut>
-                            <DropdownMenuShortcut>L</DropdownMenuShortcut>
-                          </>
+                            <DropdownMenuShortcut>⌘ L</DropdownMenuShortcut>
                       ) : (
-                          <>
-                            <DropdownMenuShortcut>Ctrl</DropdownMenuShortcut>
-                            <DropdownMenuShortcut>L</DropdownMenuShortcut>
-                          </>
+                            <DropdownMenuShortcut>Ctrl L</DropdownMenuShortcut>
                       )}
               </DropdownMenuItem>
           </DropdownMenuContent>
