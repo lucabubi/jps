@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/layout/nav-sidebar.tsx"
+import {Link} from "react-router-dom";
 
 export function NavSecondary({
   items,
@@ -26,10 +27,10 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
+                  <Link to={item.url}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                  </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

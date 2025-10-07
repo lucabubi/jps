@@ -2,14 +2,14 @@ import { toast } from 'sonner'
 import { UserOuterInterface } from '@/hooks/useAuth';
 
 // URL of the backend server
-const backendUrl = "http://localhost:8083";
+const gatewayBackendUrl = "http://localhost:8083";
 
 // Function to fetch user data from the backend
 async function fetchUser(): Promise<UserOuterInterface | null> {
     let result: UserOuterInterface | null = null;
 
     try {
-        const res = await fetch(`${backendUrl}/me`, { credentials: 'include' });
+        const res = await fetch(`${gatewayBackendUrl}/me`, { credentials: 'include' });
 
         if (res.ok) {
             const parsed = await res.json();
@@ -40,4 +40,27 @@ async function fetchUser(): Promise<UserOuterInterface | null> {
     return result;
 }
 
-export { fetchUser };
+async function fetchProfessionals(): Promise<[]> {
+    let result = [];
+
+    try {
+        toast.info("Fetching professionals from CRM...");
+        const res = await fetch(`${gatewayBackendUrl}/API/professionals/?page=0&size=10`, { credentials: 'include' });
+        if (res.ok) {
+            const parsed = await res.json();
+            console.log(parsed);
+            result = parsed;
+            toast.success("Professionals retrieved successfully.");
+        }
+        else {
+            toast.error("Error contacting CRM/Gateway server.");
+            result = [];
+        }
+    } catch {
+        toast.error("Error contacting CRM/Gateway server.");
+        result = [];
+    }
+    return result;
+}
+
+export { fetchUser, fetchProfessionals };

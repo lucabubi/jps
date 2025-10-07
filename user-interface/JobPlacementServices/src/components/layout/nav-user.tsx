@@ -1,7 +1,10 @@
+import { useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import {
-  BadgeCheck,
+  //BadgeCheck,
   ChevronsUpDown,
   LogOut,
+  Settings,
 } from "lucide-react"
 import {
   Avatar,
@@ -9,13 +12,14 @@ import {
   //AvatarImage,
 } from "@/components/ui/avatar.tsx"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuShortcut,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu.tsx"
 import {
   SidebarMenu,
@@ -23,11 +27,28 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/layout/nav-sidebar.tsx"
+import { useIsAppleDevice } from "@/hooks/useIsAppleDevice";
 import { useAuth } from "@/hooks/useAuth";
+import useHotkeys from "@/hooks/useHotkeys";
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { userData, handleLogout } = useAuth();
+  const navigate = useNavigate();
+  const isApple = useIsAppleDevice();
+
+  const openSettings = useCallback(() => {
+    navigate("/dashboard/settings");
+  }, [navigate]);
+
+  // Shortcuts registered
+  useHotkeys(
+    {
+        s: openSettings,
+        l: handleLogout,
+    },
+    { requireMod: true }
+  );
 
   return (
     <SidebarMenu>
@@ -77,15 +98,53 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+                {/*
+              <DropdownMenuItem onClick={()=>{navigate("/dashboard/profile")}}>
                 <BadgeCheck />
-                Account
+                Profile
+                  <KbdGroup className="ms-auto">
+                      {isApple ? (
+                        <Kbd>⌘ + P</Kbd>
+                      ) : (
+                        <Kbd>Ctrl + P</Kbd>
+                      )}
+                  </KbdGroup>
+              </DropdownMenuItem>
+              */}
+              <DropdownMenuItem onClick={()=>{navigate("/dashboard/settings")}}>
+                <Settings />
+                Settings
+                      {isApple ? (
+                          <>
+                            <DropdownMenuShortcut>⌘</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>S</DropdownMenuShortcut>
+                          </>
+                      ) : (
+                          <>
+                            <DropdownMenuShortcut>Ctrl</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>S</DropdownMenuShortcut>
+                          </>
+                      )}
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuItem onClick={handleLogout}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+              <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-destructive focus:text-destructive data-[highlighted]:bg-destructive/20"
+              >
+                  <LogOut className="text-red-600" />
+                  <span className="text-red-600">Logout</span>
+                      {isApple ? (
+                          <>
+                            <DropdownMenuShortcut>⌘</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>L</DropdownMenuShortcut>
+                          </>
+                      ) : (
+                          <>
+                            <DropdownMenuShortcut>Ctrl</DropdownMenuShortcut>
+                            <DropdownMenuShortcut>L</DropdownMenuShortcut>
+                          </>
+                      )}
+              </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

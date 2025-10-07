@@ -33,17 +33,16 @@ function Landing() {
                                 "skew-y-[20deg] rotate-180 inset-y-[30%] lg:inset-y-[20%] xl:inset-y-[10%] -z-10"
                             )}
                         />
-                        <div className="h-[30rem] flex items-center justify-center w-full">
+                        <div className="max-h-[24rem] max-h-[28rem] flex items-center justify-center w-full">
                             <TextHoverEffect text="JPS"/>
                         </div>
-                        <div className="flex items-center justify-center -mt-20 mb-20">
+                        <div className="flex items-center justify-center mb-20">
                             <h1 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-semibold max-w-6xl mx-auto text-center relative bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white">
                                 <div className="flex flex-col md:flex-row items-center justify-center w-full">
                                     <FlipWords words={words} className="whitespace-nowrap"/>
                                     <span className="ml-0 mt-1 md:ml-1  md:mt-0 whitespace-nowrap">endless job opportunities,</span>
                                 </div>
-                                <div
-                                    className="mt-4 bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white">
+                                <div className="mt-4 bg-clip-text text-transparent bg-gradient-to-b from-neutral-800 via-neutral-700 to-neutral-700 dark:from-neutral-800 dark:via-white dark:to-white">
                                     <Cover>at warp speed</Cover>
                                 </div>
                             </h1>
@@ -65,7 +64,7 @@ function Landing() {
                     </div>
                 </div>
                 <div className="h-full w-full">
-                    <div className="mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
+                    <div className="my-4 mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
                         <h2 className="text-5xl font-semibold text-center tracking-[-0.02em]">
                             Why <span className="text-purple-500 dark:text-purple-600 font-bold">us</span>?
                         </h2>
@@ -82,20 +81,32 @@ function Landing() {
                     <LandingTestimonials />
                 </div>
             </div>
-            <div className="w-full h-full">
-                < div className="mx-8 my-8 md:mx-12">
-                <TextPressure
-                    text="Built by Luca & Daniele"
-                    flex={true}
-                    alpha={false}
-                    stroke={false}
-                    width={false}
-                    weight={true}
-                    italic={false}
-                    textColor="currentColor"
-                    minFontSize={56}
-                    className="text-foreground"
-                />
+            <div className="w-full max-h-[4rem]">
+                <div className="px-8 py-4 md:px-12">
+                    <TextPressure
+                        text="Built by Luca & Daniele"
+                        flex={true}
+                        alpha={false}
+                        stroke={false}
+                        width={false}
+                        weight={true}
+                        italic={false}
+                        textColor="currentColor"
+                        minFontSize={12}
+                        className="text-foreground md:hidden"
+                    />
+                    <TextPressure
+                        text="Built with ♥ by Luca & Daniele"
+                        flex={true}
+                        alpha={false}
+                        stroke={false}
+                        width={false}
+                        weight={true}
+                        italic={false}
+                        textColor="currentColor"
+                        minFontSize={12}
+                        className="text-foreground hidden md:flex"
+                    />
                 </div>
             </div>
         </div>

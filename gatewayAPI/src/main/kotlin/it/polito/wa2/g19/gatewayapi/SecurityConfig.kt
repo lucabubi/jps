@@ -28,7 +28,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .authorizeRequests { it ->
+            .authorizeHttpRequests  { it ->
                 it.requestMatchers("/", "login", "logout").permitAll()  // Endpoint pubblici
                 it.requestMatchers("/secure").authenticated()          // Endpoint protetti da login
                 it.requestMatchers("/user-interface").permitAll()     // Il frontend è accessibile senza login

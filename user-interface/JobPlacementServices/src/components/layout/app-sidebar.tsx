@@ -1,11 +1,13 @@
 import * as React from "react"
 import {
-  Command,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Star,
-  LayoutDashboard,
+    // eslint-disable-next-line no-shadow-restricted-names
+    Infinity,
+    LifeBuoy,
+    Map,
+    PieChart,
+    Star,
+    LayoutDashboard,
+    UserSearch
 } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main.tsx"
@@ -51,19 +53,24 @@ export const sidebarData = {
     },
   ],
     navOperator: [{
-        title: "Operator Only Page",
-        url: "#",
-        icon: PieChart,
-    }],
+        title: "Customers",
+        url: "/dashboard/customers",
+        icon: UserSearch,
+    },
+        {
+            title: "Professionals",
+            url: "/dashboard/professionals",
+            icon: UserSearch,
+        }],
   navSecondary: [
     {
-      title: "Rate on Github",
+      title: "Rate on Github.com",
       url: "https://github.com/lucabubi/jps",
       icon: Star,
     },
     {
       title: "FAQ & Support",
-      url: "/support",
+      url: "/dashboard/support",
       icon: LifeBuoy,
     },
   ]
@@ -93,7 +100,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof NavSidebar>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <Command className="size-4" />
+                  <Infinity className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">JPS</span>

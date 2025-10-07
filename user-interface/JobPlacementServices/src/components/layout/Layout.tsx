@@ -46,13 +46,13 @@ export default function Layout({ children }: { children: ReactNode }) {
                                     const to = `/${path_names.slice(0, index + 1).join("/")}`;
                                     const isLast = index === path_names.length - 1;
 
-                                    const label = titleMap[to] ?? decodeURIComponent(value);
+                                    const label = titleMap[to] ?? decodeURIComponent(value).replace(/^./, (c) => c.toUpperCase());
 
-                                    // If on root or label is Home, skip
+                                    // If on root (=or label is Home), skip
                                     if (to === "/dashboard" || label === "Home") return null;
 
                                     return (
-                                        <div className="flex items-center" key={to}>
+                                        <div className="flex items-center gap-x-2" key={to}>
                                             <BreadcrumbSeparator />
                                             <BreadcrumbItem>
                                                 {isLast ? (
