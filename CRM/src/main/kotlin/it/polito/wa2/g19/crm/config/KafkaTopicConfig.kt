@@ -12,4 +12,15 @@ class KafkaTopicConfig {
     fun jobOfferTopic() : NewTopic {
         return TopicBuilder.name("jobOfferTopic").build()
     }
+
+    @Bean
+    fun customerTopic() : NewTopic {
+        return TopicBuilder.name("customerTopic").build()
+    }
+
+    @Bean
+    fun professionalTopic() : NewTopic {
+        return TopicBuilder.name("professionalTopic").build()
+    }
+
 }

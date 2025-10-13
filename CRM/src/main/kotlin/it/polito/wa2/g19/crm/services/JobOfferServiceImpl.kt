@@ -4,9 +4,12 @@ import it.polito.wa2.g19.crm.dtos.CreateJobOfferDTO
 import it.polito.wa2.g19.crm.dtos.CustomerMinimalDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferUpdateDTO
+import it.polito.wa2.g19.crm.events.toCreatedJobOfferEvent
 import it.polito.wa2.g19.crm.entities.JobOffer
 import it.polito.wa2.g19.crm.entities.Professional
+import it.polito.wa2.g19.crm.events.toUpdatedJobOfferEvent
 import it.polito.wa2.g19.crm.exceptions.*
+import it.polito.wa2.g19.crm.kafka.JobOfferEventsProducer
 import it.polito.wa2.g19.crm.repositories.*
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
@@ -19,6 +22,7 @@ class JobOfferServiceImpl(
     private val jobOfferRepository: JobOfferRepository,
     private val customerRepository: CustomerRepository,
     private val professionalRepository: ProfessionalRepository,
+    private val jobOfferEventsProducer: JobOfferEventsProducer
 ) : JobOfferService {
     private val logger = KotlinLogging.logger {}
 
@@ -40,6 +44,9 @@ class JobOfferServiceImpl(
         logger.info("Creating job offer: $jobOffer")
         val savedJobOffer = jobOfferRepository.save(jobOffer)
         logger.info("Job offer saved: $savedJobOffer ${savedJobOffer.customer.contact.id}")
+        //publish event
+        val savedDTO = savedJobOffer.toDTO()
+        jobOfferEventsProducer.publish(savedDTO.toCreatedJobOfferEvent())
         return savedJobOffer.toDTO()
     }
 
@@ -142,6 +149,14 @@ class JobOfferServiceImpl(
         requestDTO.notes.ifPresent{
             jobOffer.notes = requestDTO.notes.get()
         }
+        // publish event
+        val updatedDTO = jobOffer.toDTO()
+        val changedFields = mutableSetOf<String>()
+        changedFields.add("status")
+        if(requestDTO.notes.isPresent){
+            changedFields.add("notes")
+        }
+        jobOfferEventsProducer.publish(updatedDTO.toUpdatedJobOfferEvent(requestDTO, changedFields))
         return jobOffer.toDTO()
     }
 

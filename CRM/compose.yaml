@@ -21,8 +21,10 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: ${ZOOKEEPER_CLIENT_PORT:-22181}
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_OPTS: "-Dzookeeper.4lw.commands.whitelist=ruok,stat,srvr,conf"
     ports:
       - "22181:22181"
+
 
   kafka:
     image: confluentinc/cp-kafka:7.6.1
