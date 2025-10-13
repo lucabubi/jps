@@ -1,4 +1,4 @@
-package it.polito.wa2.g19.crm.messaging
+package it.polito.wa2.g19.crm.kafka
 
 import it.polito.wa2.g19.crm.events.ProfessionalEvent
 import mu.KotlinLogging

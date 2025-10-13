@@ -8,7 +8,7 @@ import it.polito.wa2.g19.crm.events.toProfessionalCreatedEvent
 import it.polito.wa2.g19.crm.events.toProfileUpdatedEvent
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotAvailableException
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotFoundException
-import it.polito.wa2.g19.crm.messaging.ProfessionalEventsProducer
+import it.polito.wa2.g19.crm.kafka.ProfessionalEventsProducer
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service

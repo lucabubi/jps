@@ -22,6 +22,10 @@ cd "../communication_manager"
 # Build the communication_manager image
 sudo ./gradlew bootBuildImage --imageName=g19/communication_manager
 
+cd "../analytics_crm"
+# Build the analytics_crm image
+sudo ./gradlew bootBuildImage --imageName=g19/analytics_crm
+
 # Navigate to user-interface directory
 cd "../user-interface/JobPlacementServices"
 
@@ -32,4 +36,4 @@ cd ".."
 cd ".."
 
 # Run docker-compose
-docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f document_store/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f analytics_crm/compose.yaml -f communication_manager/compose.yaml -f document_store/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up

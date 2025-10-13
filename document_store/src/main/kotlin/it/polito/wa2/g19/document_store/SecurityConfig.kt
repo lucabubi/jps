@@ -40,22 +40,10 @@ class SecurityConfig {
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
 
         return http.authorizeHttpRequests {
-            it.requestMatchers(HttpMethod.GET, "/API/customers/**").hasAnyRole("operator", "customer", "professional")
-            it.requestMatchers(HttpMethod.POST, "/API/customers/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.PUT, "/API/customers/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.GET, "/API/professionals/**").hasAnyRole("operator", "customer", "professional")
-            it.requestMatchers(HttpMethod.POST, "/API/professionals/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.PUT, "/API/professionals/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.GET, "/API/joboffers/**").hasAnyRole("operator", "customer", "professional")
-            it.requestMatchers(HttpMethod.POST, "/API/joboffers/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.PUT, "/API/joboffers/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.GET, "/API/messages/**").hasAnyRole("operator", "customer", "professional")
-            it.requestMatchers(HttpMethod.POST, "/API/messages/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.PUT, "/API/messages/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.GET, "/API/contacts/**").hasAnyRole("operator", "customer", "professional")
-            it.requestMatchers(HttpMethod.POST, "/API/contacts/**").hasRole("operator")
-            it.requestMatchers(HttpMethod.PUT, "/API/contacts/**").hasRole("operator")
-
+            it.requestMatchers(HttpMethod.GET, "/API/documents/**").hasAnyRole("operator", "customer", "professional")
+            it.requestMatchers(HttpMethod.POST, "/API/documents/**").hasAnyRole("operator","customer", "professional")
+            it.requestMatchers(HttpMethod.PUT, "/API/documents/**").hasAnyRole("operator","customer", "professional")
+            it.requestMatchers(HttpMethod.DELETE, "/API/documents/**").hasAnyRole("operator", "customer", "professional")
             it.anyRequest().permitAll()
         }
             .oauth2ResourceServer {

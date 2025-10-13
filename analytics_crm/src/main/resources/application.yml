@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: analytics_crm
+  profiles:
+    active: "dev"
+
+  kafka:
+    consumer:
+      bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+      group-id: analytics_crm
+      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${ISSUER_URI}
+          jwk-set-uri: ${JWK_SET_URI}
+
+  data:
+    mongodb:
+      uri: mongodb://mongo:27017/analytics

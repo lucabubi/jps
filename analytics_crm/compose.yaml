@@ -1,0 +1,21 @@
+services:
+  analytics_crm:
+    image: g19/analytics_crm
+    ports:
+      - "8084:8084"
+    env_file:
+      - ../.env
+    depends_on:
+      - kafka
+      - mongo
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: analytics
+
+volumes:
+  mongo_data:
