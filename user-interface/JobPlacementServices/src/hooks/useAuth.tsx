@@ -1,6 +1,7 @@
 import { useState, createContext, useContext, useCallback, useEffect, useMemo, ReactNode } from 'react';
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Spinner } from '@/components/ui/shadcn-io/spinner/spinner.tsx';
+import Layout  from "@/components/layout/Layout.tsx";
 import { fetchUser } from "@/lib/API";
 import { toast } from "sonner";
 
@@ -32,6 +33,10 @@ interface AuthContextInterface {
     handleLogout: () => Promise<void>;
 }
 
+// One-time toast keys (per session)
+const INFO_TOAST_KEY = 'auth.infoToastShown';
+const SUCCESS_TOAST_KEY = 'auth.successToastShown';
+
 // Context for handling user info and user-related functions
 const AuthContext = createContext<AuthContextInterface>({
     isLoading: true,
@@ -61,7 +66,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const checkAuth = async () => {
             setIsLoading(true);
-            toast.info("Checking for a valid authentication cookie just for you...");
+            // Show "checking" only once per session
+            if (!sessionStorage.getItem(INFO_TOAST_KEY)) {
+                toast.info("Checking for a valid authentication cookie just for you...");
+                sessionStorage.setItem(INFO_TOAST_KEY, '1');
+            }
             try {
                 const fetchedUser: UserOuterInterface | null = await fetchUser();
                 if (fetchedUser != null) {
@@ -72,7 +81,11 @@ function AuthProvider({ children }: { children: ReactNode }) {
                         setIsCustomer(fetchedUser.userData.roles.includes("customer"));
                         setIsProfessional(fetchedUser.userData.roles.includes("professional"));
                         setIsOperator(fetchedUser.userData.roles.includes("operator"));
-                        toast.success("User authenticated successfully.");
+                        // Show "success" only once per session
+                        if (!sessionStorage.getItem(SUCCESS_TOAST_KEY)) {
+                            toast.success("User authenticated successfully.");
+                            sessionStorage.setItem(SUCCESS_TOAST_KEY, '1');
+                        }
                     } else {
                         setIsCustomer(false);
                         setIsProfessional(false);
@@ -101,6 +114,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
             toast.error("Login URL not available.");
             return;
         }
+        // Reset session toasts on new login flow
+        sessionStorage.removeItem(INFO_TOAST_KEY);
+        sessionStorage.removeItem(SUCCESS_TOAST_KEY);
         window.location.href = url;
     }, [user]);
 
@@ -110,6 +126,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
             toast.error("Logout URL not available.");
             return;
         }
+        // Clear toasts so next session can show them again
+        sessionStorage.removeItem(INFO_TOAST_KEY);
+        sessionStorage.removeItem(SUCCESS_TOAST_KEY);
         window.location.href = url;
     }, [user]);
 
@@ -148,5 +167,17 @@ function Authenticated({ children }: { children: ReactNode }) {
     return <>{children}</>;
 }
 
+function ProtectedLayout() {
+    return (
+        <Authenticated>
+            <div style={{ display: 'flex', minHeight: '100dvh' }}>
+                <Layout>
+                    <Outlet />
+                </Layout>
+            </div>
+        </Authenticated>
+    );
+}
+
 export type { UserOuterInterface, UserInnerInterface };
-export { AuthProvider, useAuth, Authenticated };
+export { AuthProvider, useAuth, Authenticated, ProtectedLayout };
