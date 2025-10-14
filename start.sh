@@ -35,5 +35,7 @@ sudo docker build -t g19/user-interface .
 cd ".."
 cd ".."
 
+docker network create jps-net
+docker network ls | grep jps-net
 # Run docker-compose
 docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f analytics_crm/compose.yaml -f communication_manager/compose.yaml -f document_store/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up

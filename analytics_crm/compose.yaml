@@ -1,3 +1,8 @@
+networks:
+  default:
+    external: true
+    name: jps-net
+
 services:
   analytics_crm:
     image: g19/analytics_crm
@@ -6,8 +11,9 @@ services:
     env_file:
       - ../.env
     depends_on:
-      - kafka
       - mongo
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
   mongo:
     image: mongo:latest
     ports:
@@ -16,6 +22,8 @@ services:
       - mongo_data:/data/db
     environment:
       MONGO_INITDB_DATABASE: analytics
+
+
 
 volumes:
   mongo_data:
