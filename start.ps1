@@ -10,6 +10,12 @@ Set-Location -Path "../CRM"
 # Build the CRM image
 ./gradlew bootBuildImage --imageName=g19/crm
 
+# Navigate to analytics_crm directory
+Set-Location -Path "../analytics_crm"
+
+# Build the analytics_crm image
+./gradlew bootBuildImage --imageName=g19/analytics_crm
+
 # Navigate to communication_manager directory
 Set-Location -Path "../communication_manager"
 
@@ -23,5 +29,7 @@ docker build -t g19/user-interface .
 # Navigate back to the lab5 directory
 Set-Location -Path "../../"
 
+# Create a Docker network
+docker network create jps-net
 # Run docker-compose
-docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f analytics_crm/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
