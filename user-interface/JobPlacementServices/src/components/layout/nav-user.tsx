@@ -1,16 +1,17 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  //BadgeCheck,
-  ChevronsUpDown,
-  LogOut,
-  Settings,
+    //BadgeCheck,
+    ChevronsUpDown, Fullscreen,
+    LogOut,
+    Settings,
 } from "lucide-react"
 import {
   Avatar,
   AvatarFallback,
   //AvatarImage,
 } from "@/components/ui/avatar.tsx"
+import Switch from "@/components/ui/switch"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,12 +31,14 @@ import {
 import { useIsAppleDevice } from "@/hooks/useIsAppleDevice";
 import { useAuth } from "@/hooks/useAuth";
 import useHotkeys from "@/hooks/useHotkeys";
+import useFullscreen from "@/hooks/useFullscreen";
 
 export function NavUser() {
   const { isMobile } = useSidebar()
   const { userData, handleLogout } = useAuth();
   const navigate = useNavigate();
   const isApple = useIsAppleDevice();
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   const openSettings = useCallback(() => {
     navigate("/dashboard/settings");
@@ -111,6 +114,11 @@ export function NavUser() {
                   </KbdGroup>
               </DropdownMenuItem>
               */}
+                <DropdownMenuItem className="flex items-center" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); }}>
+                    <Fullscreen />
+                    Full-screen
+                    <Switch id="toggle-fullscreen" checked={isFullscreen} onCheckedChange={toggleFullscreen} onClick={e => e.stopPropagation()} className="scale-75 ml-auto mr-0"/>
+                </DropdownMenuItem>
               <DropdownMenuItem onClick={()=>{navigate("/dashboard/settings")}}>
                 <Settings />
                 Settings

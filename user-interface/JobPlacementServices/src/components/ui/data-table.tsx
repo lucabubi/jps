@@ -46,9 +46,6 @@ export function DataTable<TData, TValue>({
         },
     })
 
-    const visibleColumns = table.getAllColumns().filter(column => column.getIsVisible())
-    const hiddenColumns = table.getAllColumns().filter(column => !column.getIsVisible())
-
     return (
         <div className="w-full">
         <VisibilityButton />
@@ -106,6 +103,9 @@ export function DataTable<TData, TValue>({
     )
 
     function VisibilityButton() {
+        const allColumns = table.getAllColumns();
+        const visibleColumns = allColumns.filter(column => column.getIsVisible());
+        const hiddenColumns = allColumns.filter(column => !column.getIsVisible());
         return (
             <div className="w-full">
                 <div className="flex items-center py-4">
@@ -118,10 +118,13 @@ export function DataTable<TData, TValue>({
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-[200px]">
-                                <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+                                <DropdownMenuLabel>Columns Visibility</DropdownMenuLabel>
+                                <div className="px-2 text-sm text-muted-foreground -pt-1.5 pb-1">
+                                    <span>{visibleColumns.length} visible / </span>
+                                    <span>{hiddenColumns.length} hidden</span>
+                                </div>
                                 <DropdownMenuSeparator />
-                                {table
-                                    .getAllColumns()
+                                {allColumns
                                     .filter((column) => column.getCanHide())
                                     .map((column) => {
                                         return (
@@ -139,18 +142,19 @@ export function DataTable<TData, TValue>({
                                                     ) : (
                                                         <EyeOff className="h-4 w-4" />
                                                     )}
-                                                    <span>{column.id}</span>
+                                                    <span>
+                                                        {
+                                                            typeof column.columnDef.header === "string"
+                                                                ? column.columnDef.header
+                                                                : column.id
+                                                        }
+                                                    </span>
                                                 </div>
                                             </DropdownMenuCheckboxItem>
                                         )
                                     })}
                             </DropdownMenuContent>
                         </DropdownMenu>
-                    </div>
-                    <div className="flex-1" />
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>{visibleColumns.length} visible</span>
-                        <span>{hiddenColumns.length} hidden</span>
                     </div>
                 </div>
             </div>

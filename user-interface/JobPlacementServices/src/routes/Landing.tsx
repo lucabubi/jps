@@ -11,6 +11,7 @@ import {InteractiveGridPattern} from "@/components/ui/shadcn-io/interactive-grid
 import TextPressure from "@/components/ui/shadcn-io/text-pressure";
 import { useAuth } from "@/hooks/useAuth";
 import {cn} from "@/lib/utils.ts";
+import { RevealOnScroll } from "@/components/landing/gsap/reveal-on-scroll.tsx";
 
 function Landing() {
     const {handleLogin, isAuthenticated} = useAuth();
@@ -63,6 +64,7 @@ function Landing() {
                         </HoverBorderGradient>
                     </div>
                 </div>
+                <RevealOnScroll >
                 <div className="h-full w-full">
                     <div className="my-4 mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
                         <h2 className="text-5xl font-semibold text-center tracking-[-0.02em]">
@@ -77,9 +79,12 @@ function Landing() {
                         <LandingFeatures />
                     </div>
                 </div>
+                </RevealOnScroll>
+            <RevealOnScroll>
                 <div className="mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
                     <LandingTestimonials />
                 </div>
+            </RevealOnScroll>
             </div>
             <div className="w-full max-h-[4rem]">
                 <div className="px-8 py-4 md:px-12">

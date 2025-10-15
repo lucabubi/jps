@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 import { ColumnDef } from "@tanstack/react-table"
 import { Professional } from "@/lib/API";
 import { Badge } from "@/components/ui/badge"
-import { Mail, MoreHorizontal, Trash2, UserPen } from "lucide-react";
+import { Copy, Mail, MoreHorizontal, Trash2, UserCheck, UserPen, UserX, Pickaxe } from "lucide-react";
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -14,13 +14,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
-    Drawer, DrawerClose,
+    Drawer,
+    DrawerClose,
     DrawerContent,
-    DrawerDescription, DrawerFooter,
+    DrawerDescription,
+    DrawerFooter,
     DrawerHeader,
     DrawerTitle,
 } from "@/components/ui/drawer"
-import { deleteProfessionalById } from "@/lib/API";
+import { deleteContactById } from "@/lib/API";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner";
@@ -34,7 +36,7 @@ type ConfirmDeleteDrawerProps = {
     idToConfirm: number | string;
 };
 
-function ConfirmDeleteDrawer({ open, onOpenChange, onConfirm, idToConfirm }: ConfirmDeleteDrawerProps) {
+function ConfirmDeleteProfessionalDrawer({ open, onOpenChange, onConfirm, idToConfirm }: ConfirmDeleteDrawerProps) {
     const [typedId, setTypedId] = useState("");
 
     useEffect(() => {
@@ -42,15 +44,15 @@ function ConfirmDeleteDrawer({ open, onOpenChange, onConfirm, idToConfirm }: Con
     }, [open]);
 
     const expected = String(idToConfirm);
-    const canConfirm = typedId.trim() === expected;
+    const canConfirm = typedId === expected;
 
     return (
         <Drawer open={open} onOpenChange={onOpenChange}>
             <DrawerContent>
                 <DrawerHeader>
-                    <DrawerTitle>Attention! You're deleting a professional.</DrawerTitle>
+                    <DrawerTitle>Attention! You're deleting a professional and the associated contact.</DrawerTitle>
                     <DrawerDescription>
-                        This action is irreversible. You are deleting the professional with ID: <Badge className="rounded-none bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800 hover:bg-red-100 hover:text-red-800 hover:border-red-200 transition-none">{expected}</Badge>
+                        This action is irreversible. The associated contact information will be deleted automatically. Paste actions are temporarily disabled. Confirm you want to delete the professional with ID: <Badge className="rounded-none bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800 hover:bg-red-100 hover:text-red-800 hover:border-red-200 transition-none">{expected}</Badge>
                     </DrawerDescription>
                     <div className="grid w-full max-w-sm items-center gap-2">
                         <Label htmlFor="delete-confirm">Type <Badge className="rounded-none bg-red-100 text-red-800 border border-red-200 dark:bg-red-900/30 dark:text-red-200 dark:border-red-800 hover:bg-red-100 hover:text-red-800 hover:border-red-200 transition-none">{expected}</Badge> in the box below to proceed:</Label>
@@ -61,7 +63,8 @@ function ConfirmDeleteDrawer({ open, onOpenChange, onConfirm, idToConfirm }: Con
                             value={typedId}
                             onChange={(e) => setTypedId(e.target.value)}
                             autoComplete="off"
-                            className="font-bold text-red-800 focus-visible:ring-red-600 focus:ring-red-600 selection:bg-red-200 selection:text-red-900 dark:selection:bg-red-900/40"
+                            className="font-bold text-red-800 focus-visible:ring-red-700 focus:ring-red-700 selection:bg-red-200 selection:text-red-900 dark:selection:bg-red-900/40"
+                            onPaste={(e) => {e.preventDefault(); toast.error("For security reasons, paste actions are disabled here.")}}
                         />
                     </div>
                 </DrawerHeader>
@@ -88,7 +91,7 @@ const handleDeleteProfessional = async (professionalId: number, onDirty: OnDirty
         toast.error("Unable to find the given professional.");
         return;
     }
-    const result = await deleteProfessionalById(professionalId);
+    const result = await deleteContactById(professionalId);
     if (result) {
         onDirty();
         toast.success("Professional deleted.");
@@ -97,11 +100,33 @@ const handleDeleteProfessional = async (professionalId: number, onDirty: OnDirty
     }
 };
 
+function EmploymentStateBadge(state: string) {
+    switch (state) {
+        case 'EMPLOYED':
+            return <Badge className='rounded-md border-none bg-amber-600/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400 dark:focus-visible:ring-amber-400/40 hover:bg-amber-600/10 dark:hover:bg-amber-400/10'>
+                <Pickaxe className='size-3 mr-1' />
+                Employed
+            </Badge>;
+        case 'AVAILABLE_FOR_WORK':
+            return <Badge className='rounded-md border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 hover:bg-green-600/10 dark:hover:bg-green-400/10'>
+                <UserCheck className='size-3 mr-1' />
+                Available for work
+            </Badge>;
+        case 'NOT_AVAILABLE':
+            return <Badge className='rounded-md border-none bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400 dark:focus-visible:ring-red-400/40 hover:bg-red-600/10 dark:hover:bg-red-400/10'>
+                <UserX className='size-3 mr-1' />
+                Not available
+            </Badge>;
+        default:
+            return "Unable to render the badge.";
+    }
+}
+
 function ActionsCell({ professional, onDirty }: { professional: Professional; onDirty: OnDirty }) {
     const [open, setOpen] = useState(false);
 
     const confirmAndDelete = async () => {
-        await handleDeleteProfessional(professional.id, onDirty);
+        await handleDeleteProfessional(professional.contact.id, onDirty);
         setOpen(false);
     };
 
@@ -116,9 +141,20 @@ function ActionsCell({ professional, onDirty }: { professional: Professional; on
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                    <DropdownMenuItem onClick={() => {
+                        try {
+                            navigator.clipboard.writeText(String(professional.id))
+                            toast.success("ID copied to clipboard.")
+                        } catch {
+                            toast.error("Unable to copy ID to clipboard.")
+                        }
+                    }}>
+                        <Copy />
+                        Copy ID
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                         <UserPen />
-                        Edit Professional
+                        View/Edit Profile
                     </DropdownMenuItem>
                     <DropdownMenuItem
                         onClick={() => setOpen(true)}
@@ -130,7 +166,7 @@ function ActionsCell({ professional, onDirty }: { professional: Professional; on
                 </DropdownMenuContent>
             </DropdownMenu>
 
-            <ConfirmDeleteDrawer
+            <ConfirmDeleteProfessionalDrawer
                 open={open}
                 onOpenChange={setOpen}
                 onConfirm={confirmAndDelete}
@@ -160,13 +196,13 @@ export const createProfessionalsColumns = (onDirty: OnDirty): ColumnDef<Professi
                             <Badge
                                 key={em}
                                 variant="secondary"
-                                className="bg-purple-400 text-white dark:bg-purple-500"
+                                className="rounded-md"
                             >
-                                <Mail size={14} className="mr-1" />
+                                <Mail className='size-3 mr-1' />
                                 {em}
                             </Badge>
                         ))
-                        : null}
+                        : "No data."}
                 </div>
             );
         },
@@ -174,7 +210,7 @@ export const createProfessionalsColumns = (onDirty: OnDirty): ColumnDef<Professi
     { accessorKey: "ssn", header: "SSN" },
     {
         accessorKey: "dailyRate",
-        header: "Daily Rate",
+        header: "Daily Rate ($)",
         cell: ({ row }) => {
             const amount = parseFloat(row.getValue("dailyRate"));
             const formatted = new Intl.NumberFormat("en-US", {
@@ -184,7 +220,14 @@ export const createProfessionalsColumns = (onDirty: OnDirty): ColumnDef<Professi
             return <div className="text-left font-semibold">{formatted}</div>;
         },
     },
-    { accessorKey: "employmentState", header: "Employment State" },
+    {
+        accessorKey: "employmentState",
+        header: "Employment State",
+        cell: ({ getValue }) => {
+            const state = getValue<string>();
+            return EmploymentStateBadge(state);
+        }
+    },
     { accessorKey: "skills", header: "Skills" },
     { accessorKey: "location", header: "Location" },
     {

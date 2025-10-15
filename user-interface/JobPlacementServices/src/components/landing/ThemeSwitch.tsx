@@ -1,7 +1,7 @@
-import { Sun, Moon } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx"
-import { useTheme } from "@/hooks/useTheme.tsx"
-import { useCallback } from "react";
+import {Moon, Sun} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx"
+import {useTheme} from "@/hooks/useTheme.tsx"
+import {useCallback} from "react";
 
 export default function ThemeSwitch() {
     const { setTheme, resolvedTheme } = useTheme();
@@ -13,7 +13,7 @@ export default function ThemeSwitch() {
         style.id = styleId;
 
         // Circle-blur animation CSS centered on the button
-        const css = `
+        style.textContent = `
             @supports (view-transition-name: root) {
                 ::view-transition-old(root) { 
                     animation: none;
@@ -35,8 +35,6 @@ export default function ThemeSwitch() {
                 }
             }
         `;
-
-        style.textContent = css;
         document.head.appendChild(style);
 
         // Clean up animation styles after transition

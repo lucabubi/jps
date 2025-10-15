@@ -97,17 +97,17 @@ async function fetchProfessionals(): Promise<[] | Professional[]> {
     return result;
 }
 
-async function deleteProfessionalById(professionalId: number): Promise<boolean> {
+async function deleteContactById(contactId: number): Promise<boolean> {
     let result = false;
 
     try {
-        toast.info("Deleting professional from CRM...");
-        const res = await fetch(`${gatewayBackendUrl}/API/professionals/${professionalId}`, {
+        toast.info("Deleting data from CRM...");
+        const res = await fetch(`${gatewayBackendUrl}/API/contacts/${contactId}`, {
             method: 'DELETE',
             credentials: 'include'
         });
         if (res.ok) {
-            toast.success("Professional deleted successfully.");
+            toast.success("Data deleted successfully.");
             result = true;
         }
         else {
@@ -122,4 +122,4 @@ async function deleteProfessionalById(professionalId: number): Promise<boolean> 
     return result;
 }
 
-export { fetchUser, fetchProfessionals, deleteProfessionalById };
+export { fetchUser, fetchProfessionals, deleteContactById };
