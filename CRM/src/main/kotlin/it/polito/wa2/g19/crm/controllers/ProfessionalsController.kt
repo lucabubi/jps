@@ -4,7 +4,7 @@ import it.polito.wa2.g19.crm.dtos.ProfessionalDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalUpdateDTO
 import it.polito.wa2.g19.crm.entities.Professional
 import it.polito.wa2.g19.crm.services.CRMService
-import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -26,9 +26,17 @@ class ProfessionalsController(private val crmService: CRMService) {
         @RequestParam(required = false) location: Optional<String>,
         @RequestParam(required = false) skills: Optional<List<String>>
     ) : ResponseEntity<List<ProfessionalDTO>> {
-        val pageable = PageRequest.of(page, size)
-        val professionalsDTO = crmService.getProfessionals(pageable, employmentState, location, skills)
-        return ResponseEntity.ok(professionalsDTO)
+        val all = crmService.getProfessionals(Pageable.unpaged(), employmentState, location, skills)
+        val total = all.size
+
+        val from = (page * size).coerceAtMost(total)
+        val to = (from + size).coerceAtMost(total)
+        val content = if (from < to) all.subList(from, to) else emptyList()
+
+        // header X-Total-Count for frontend to know the total number of items and implement pagination buttons
+        return ResponseEntity.ok()
+            .header("X-Total-Count", total.toString())
+            .body(content)
     }
 
     @GetMapping("/{professionalId}")

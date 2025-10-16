@@ -1,4 +1,3 @@
-// file: 'user-interface/JobPlacementServices/src/components/dashboard/CreateProfessionalsColumns.tsx'
 import {useEffect, useState} from "react";
 import { ColumnDef } from "@tanstack/react-table"
 import { Professional } from "@/lib/API";
@@ -207,7 +206,7 @@ export const createProfessionalsColumns = (onDirty: OnDirty): ColumnDef<Professi
             );
         },
     },
-    { accessorKey: "ssn", header: "SSN" },
+    { accessorKey: "contact.ssn", header: "SSN" },
     {
         accessorKey: "dailyRate",
         header: "Daily Rate ($)",

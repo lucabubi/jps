@@ -53,6 +53,7 @@ class WebConfig : WebMvcConfigurer {
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
+            .exposedHeaders("x-total-count")
     }
 }
 
