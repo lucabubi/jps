@@ -8,7 +8,7 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
+    DropdownMenuLabel, DropdownMenuSeparator,
     //DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
@@ -151,6 +151,18 @@ function ActionsCell({ professional, onDirty }: { professional: Professional; on
                         <Copy />
                         Copy ID
                     </DropdownMenuItem>
+                    <DropdownMenuItem disabled={!professional.contact.ssn } onClick={() => {
+                        try {
+                            navigator.clipboard.writeText(String(professional.contact.ssn))
+                            toast.success("SSN copied to clipboard.")
+                        } catch {
+                            toast.error("Unable to copy SSN to clipboard.")
+                        }
+                    }}>
+                        <Copy />
+                        Copy SSN
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem>
                         <UserPen />
                         View/Edit Profile

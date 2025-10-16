@@ -117,7 +117,7 @@ export function NavUser() {
                 <DropdownMenuItem className="flex items-center" onClick={e => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); }}>
                     <Fullscreen />
                     Full-screen
-                    <Switch id="toggle-fullscreen" checked={isFullscreen} onCheckedChange={toggleFullscreen} onClick={e => e.stopPropagation()} className="scale-75 ml-auto mr-0"/>
+                    <Switch id="toggle-fullscreen" checked={isFullscreen} onCheckedChange={toggleFullscreen} onClick={e => e.stopPropagation()} className="scale-90 ml-auto mr-0"/>
                 </DropdownMenuItem>
               <DropdownMenuItem onClick={()=>{navigate("/dashboard/settings")}}>
                 <Settings />

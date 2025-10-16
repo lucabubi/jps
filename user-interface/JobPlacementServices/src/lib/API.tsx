@@ -76,26 +76,31 @@ async function fetchUser(): Promise<UserOuterInterface | null> {
     return result;
 }
 
-async function fetchProfessionals(): Promise<[] | Professional[]> {
-    let result:[] | Professional[] = [];
+async function fetchProfessionals(pageIndex: number = 0, pageSize: number = 10): Promise<{ total: number; data: Professional[] }> {
+    let data: Professional[] = [];
+    let total = 0;
 
     try {
         toast.info("Fetching professionals from CRM...");
-        const res = await fetch(`${gatewayBackendUrl}/API/professionals/?page=0&size=10`, { credentials: 'include' });
+        const res = await fetch(`${gatewayBackendUrl}/API/professionals/?page=${pageIndex}&size=${pageSize}`, { credentials: 'include' });
+
         if (res.ok) {
-            result = await res.json();
+            const headerTotal = res.headers.get('X-Total-Count') ?? res.headers.get('x-total-count');
+            const parsedTotal = headerTotal ? parseInt(headerTotal, 10) : 0;
+            total = Number.isNaN(parsedTotal) ? 0 : parsedTotal;
+
+            data = await res.json();
             toast.success("Professionals retrieved successfully.");
-        }
-        else {
+        } else {
             toast.error("Error contacting CRM/Gateway server.");
-            result = [];
         }
     } catch {
         toast.error("Error contacting CRM/Gateway server.");
-        result = [];
     }
-    return result;
+
+    return { total, data };
 }
+
 
 async function deleteContactById(contactId: number): Promise<boolean> {
     let result = false;
@@ -112,12 +117,10 @@ async function deleteContactById(contactId: number): Promise<boolean> {
         }
         else {
             toast.error("Error contacting CRM/Gateway server.");
-            result = false;
         }
     }
     catch {
         toast.error("Error contacting CRM/Gateway server.");
-        result = false;
     }
     return result;
 }
