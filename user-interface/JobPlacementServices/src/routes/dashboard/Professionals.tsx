@@ -4,7 +4,10 @@ import { Professional } from "@/lib/API";
 //import { Spinner } from "@/components/ui/spinner";
 import { createProfessionalsColumns } from "@/components/dashboard/CreateProfessionalsColumns.tsx";
 import { DataTable } from "@/components/ui/data-table";
-import { Spinner } from "@/components/ui/spinner.tsx";
+import { Spinner as SpinnerIO } from "@/components/ui/shadcn-io/spinner/spinner.tsx";
+import {Button} from "@/components/ui/button.tsx";
+import {RefreshCcw, UserPlus} from "lucide-react";
+import {Spinner} from "@/components/ui/spinner.tsx";
 
 export type paginationType = {
     pageIndex: number;
@@ -64,13 +67,32 @@ export default function Professionals() {
         getProfessionals();
     }, [isDirty, pagination.pageIndex, pagination.pageSize]);
 
-    if (isLoading) {
-        return <Spinner />
-    }
-
     return (
-        <div className="w-full">
-            <DataTable variant="professional" columns={createProfessionalsColumns(() => setIsDirty(true))} data={professionals} pagination={pagination} setPagination={setPagination}/>
-        </div>
+        <>
+            <div className="w-full flex mt-2 items-center justify-between border-b">
+                <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-2">
+                    Professionals
+                </h2>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" aria-label="Refresh" disabled={isLoading} onClick={() => setIsDirty(true)}>
+                        { isLoading ? <Spinner className="text-violet-600" /> : <RefreshCcw /> }
+                        <span className="hidden sm:inline">Refresh</span>
+                    </Button>
+                    <Button disabled={isLoading} size="sm" onClick={() => {}}>
+                        <UserPlus />
+                        Add Professional
+                    </Button>
+                </div>
+            </div>
+            { isLoading ?
+                <div className="w-full flex justify-center items-center h-64">
+                    <SpinnerIO variant="infinite" />
+                </div>
+            :
+            <div className="w-full">
+                <DataTable variant="professional" columns={createProfessionalsColumns(() => setIsDirty(true))} data={professionals} pagination={pagination} setPagination={setPagination}/>
+            </div>
+            }
+        </>
     );
 }
