@@ -264,99 +264,172 @@ export function DataTable<TData, TValue>({
         const pageNumbers = getPageNumbers()
 
         return (
-            <div className="grid w-full grid-cols-2 gap-3 py-2 sm:grid-cols-3 sm:items-center sm:px-2">
-                {/* Left: Page info (base and sm) */}
-                <div className="justify-self-start text-sm text-muted-foreground">
-                    Page <span className="font-medium text-foreground">{currentPage}</span> of{" "}
-                    <span className="font-medium text-foreground">{totalPages}</span>
-                </div>
-
-                {/* Right: Page size selector (first row right on base, right column on sm) */}
-                <div className="justify-self-end sm:col-start-3">
-                    <Select
-                        value={table.getState().pagination.pageSize.toString()}
-                        onValueChange={(value) => table.setPageSize(Number(value))}
-                    >
-                        <SelectTrigger className="h-7 w-fit gap-2" aria-label="Select page size">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {[10, 20, 50, 100].map((size) => (
-                                <SelectItem key={size} value={size.toString()}>
-                                    {`${size} / page`}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {/* Center: Navigation (second row centered on base, center column on sm) */}
-                <div className="col-span-2 flex items-center gap-1 justify-center sm:col-span-1 sm:col-start-2">
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-9 bg-transparent"
-                        onClick={() => table.setPageIndex(0)}
-                        disabled={!canPrev}
-                        aria-label="Go to first page"
-                    >
-                        <ChevronsLeft className="h-4 w-4"/>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-9 bg-transparent"
-                        onClick={() => table.previousPage()}
-                        disabled={!canPrev}
-                        aria-label="Go to previous page"
-                    >
-                        <ChevronLeft className="h-4 w-4"/>
-                    </Button>
-                    <div className="hidden items-center gap-1 md:flex">
-                        {pageNumbers.map((page, index) => {
-                            if (typeof page === "string") {
-                                return (
-                                    <div key={`${page}-${index}`} className="flex h-7 w-9 items-center justify-center" aria-hidden="true">
-                                        <MoreHorizontal className="h-4 w-4 text-muted-foreground"/>
-                                    </div>
-                                )
-                            }
-                            const isActive = page === currentPage
-                            return (
-                                <Button
-                                    key={page}
-                                    variant={isActive ? "default" : "outline"}
-                                    size="icon"
-                                    className="h-7 w-9"
-                                    onClick={() => table.setPageIndex(page - 1)}
-                                    aria-label={`Go to page ${page}`}
-                                    aria-current={isActive ? "page" : undefined}
-                                >
-                                    {page}
-                                </Button>
-                            )
-                        })}
+            <div className="w-full py-2 sm:px-2">
+                {/* Default (non-sm): Single row with 3 columns */}
+                <div className="hidden sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
+                    {/* Page info - Left */}
+                    <div className="text-sm text-muted-foreground">
+                        Page <span className="font-medium text-foreground">{currentPage}</span> of{" "}
+                        <span className="font-medium text-foreground">{totalPages}</span>
                     </div>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-9 bg-transparent"
-                        onClick={() => table.nextPage()}
-                        disabled={!canNext}
-                        aria-label="Go to next page"
-                    >
-                        <ChevronRight className="h-4 w-4"/>
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-9 bg-transparent"
-                        onClick={() => table.setPageIndex(totalPages - 1)}
-                        disabled={!canNext}
-                        aria-label="Go to last page"
-                    >
-                        <ChevronsRight className="h-4 w-4"/>
-                    </Button>
+
+                    {/* Navigation - Center */}
+                    <div className="flex items-center gap-1 justify-center">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!canPrev}
+                            aria-label="Go to first page"
+                        >
+                            <ChevronsLeft className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.previousPage()}
+                            disabled={!canPrev}
+                            aria-label="Go to previous page"
+                        >
+                            <ChevronLeft className="h-4 w-4"/>
+                        </Button>
+                        <div className="flex items-center gap-1">
+                            {pageNumbers.map((page, index) => {
+                                if (typeof page === "string") {
+                                    return (
+                                        <div key={`${page}-${index}`} className="flex h-7 w-9 items-center justify-center" aria-hidden="true">
+                                            <MoreHorizontal className="h-4 w-4 text-muted-foreground"/>
+                                        </div>
+                                    )
+                                }
+                                const isActive = page === currentPage
+                                return (
+                                    <Button
+                                        key={page}
+                                        variant={isActive ? "default" : "outline"}
+                                        size="icon"
+                                        className="h-7 w-9"
+                                        onClick={() => table.setPageIndex(page - 1)}
+                                        aria-label={`Go to page ${page}`}
+                                        aria-current={isActive ? "page" : undefined}
+                                    >
+                                        {page}
+                                    </Button>
+                                )
+                            })}
+                        </div>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.nextPage()}
+                            disabled={!canNext}
+                            aria-label="Go to next page"
+                        >
+                            <ChevronRight className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.setPageIndex(totalPages - 1)}
+                            disabled={!canNext}
+                            aria-label="Go to last page"
+                        >
+                            <ChevronsRight className="h-4 w-4"/>
+                        </Button>
+                    </div>
+
+                    {/* Page size selector - Right */}
+                    <div className="flex justify-end">
+                        <Select
+                            value={table.getState().pagination.pageSize.toString()}
+                            onValueChange={(value) => table.setPageSize(Number(value))}
+                        >
+                            <SelectTrigger className="h-7 w-fit gap-2" aria-label="Select page size">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {[10, 20, 50, 100].map((size) => (
+                                    <SelectItem key={size} value={size.toString()}>
+                                        {`${size} / page`}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+
+                {/* Small screens: 2 rows */}
+                <div className="sm:hidden space-y-3">
+                    {/* First row: Page info and Page size selector */}
+                    <div className="flex items-center justify-between">
+                        <div className="text-sm text-muted-foreground">
+                            Page <span className="font-medium text-foreground">{currentPage}</span> of{" "}
+                            <span className="font-medium text-foreground">{totalPages}</span>
+                        </div>
+                        <Select
+                            value={table.getState().pagination.pageSize.toString()}
+                            onValueChange={(value) => table.setPageSize(Number(value))}
+                        >
+                            <SelectTrigger className="h-7 w-fit gap-2" aria-label="Select page size">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {[10, 20, 50, 100].map((size) => (
+                                    <SelectItem key={size} value={size.toString()}>
+                                        {`${size} / page`}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
+                    {/* Second row: Navigation centered */}
+                    <div className="flex items-center gap-1 justify-center">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!canPrev}
+                            aria-label="Go to first page"
+                        >
+                            <ChevronsLeft className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.previousPage()}
+                            disabled={!canPrev}
+                            aria-label="Go to previous page"
+                        >
+                            <ChevronLeft className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.nextPage()}
+                            disabled={!canNext}
+                            aria-label="Go to next page"
+                        >
+                            <ChevronRight className="h-4 w-4"/>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-7 w-9 bg-transparent"
+                            onClick={() => table.setPageIndex(totalPages - 1)}
+                            disabled={!canNext}
+                            aria-label="Go to last page"
+                        >
+                            <ChevronsRight className="h-4 w-4"/>
+                        </Button>
+                    </div>
                 </div>
             </div>
         )
