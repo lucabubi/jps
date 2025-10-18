@@ -96,13 +96,13 @@ export default function ThemeSwitch({ variant }: ThemeSwitchProps) {
         </Button>
     ) : (
         <div className="flex items-center space-x-3">
-            <Sun className="size-4" />
+            <Sun className={`size-4 ${isDark ? 'text-muted-foreground' : ''}`} />
             <Switch
                 checked={isDark}
                 onCheckedChange={toggleTheme}
                 aria-label="Toggle theme"
             />
-            <Moon className="size-4" />
+            <Moon className={`size-4 ${!isDark ? 'text-muted-foreground' : ''}`} />
         </div>
     );
 }
