@@ -16,6 +16,7 @@ import {
     SidebarTrigger,
 } from "@/components/layout/nav-sidebar.tsx"
 import { sidebarData, buildTitleMap } from "@/components/layout/app-sidebar.tsx";
+import ThemeSwitch from "@/components/landing/ThemeSwitch.tsx";
 
 const titleMap = buildTitleMap(sidebarData);
 
@@ -27,7 +28,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
-                <header className="flex h-16 shrink-0 items-center gap-2">
+                <header className="flex h-16 shrink-0 items-center justify-between border-b px-1 pr-6">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
@@ -68,6 +69,10 @@ export default function Layout({ children }: { children: ReactNode }) {
                                 })}
                             </BreadcrumbList>
                         </Breadcrumb>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <ThemeSwitch variant="dashboard" />
+                        <Separator orientation="vertical" className="data-[orientation=vertical]:h-4" />
                     </div>
                 </header>
 

@@ -5,32 +5,32 @@
 cd "./gatewayAPI"
 
 # Build the gatewayAPI image
-sudo ./gradlew bootBuildImage --imageName=g19/gateway_api
+./gradlew bootBuildImage --imageName=g19/gateway_api
 # Navigate to CRM directory
 cd "../CRM"
 
 # Build the CRM image
-sudo ./gradlew bootBuildImage --imageName=g19/crm
+./gradlew bootBuildImage --imageName=g19/crm
 
 cd "../document_store"
 # Build the document_store image
-sudo ./gradlew bootBuildImage --imageName=g19/document_store
+./gradlew bootBuildImage --imageName=g19/document_store
 
 # Navigate to communication_manager directory
 cd "../communication_manager"
 
 # Build the communication_manager image
-sudo ./gradlew bootBuildImage --imageName=g19/communication_manager
+./gradlew bootBuildImage --imageName=g19/communication_manager
 
 cd "../analytics_crm"
 # Build the analytics_crm image
-sudo ./gradlew bootBuildImage --imageName=g19/analytics_crm
+./gradlew bootBuildImage --imageName=g19/analytics_crm
 
 # Navigate to user-interface directory
 cd "../user-interface/JobPlacementServices"
 
 # Build the user-interface image
-sudo docker build -t g19/user-interface .
+docker build -t g19/user-interface .
 # shellcheck disable=SC2103
 cd ".."
 cd ".."

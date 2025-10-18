@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, useCallback, useEffect, useMemo, ReactNode } from 'react';
 import { Navigate, Outlet } from "react-router-dom";
-import { Spinner } from '@/components/ui/shadcn-io/spinner/spinner.tsx';
+import { Spinner as SpinnerIO } from '@/components/ui/shadcn-io/spinner/spinner.tsx';
 import Layout  from "@/components/layout/Layout.tsx";
 import { fetchUser } from "@/lib/API";
 import { toast } from "sonner";
@@ -156,7 +156,7 @@ function Authenticated({ children }: { children: ReactNode }) {
     if (isLoading) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-background">
-                <Spinner variant="infinite" color="var(--primary)" />
+                <SpinnerIO variant="infinite" />
             </div>
         )
     }

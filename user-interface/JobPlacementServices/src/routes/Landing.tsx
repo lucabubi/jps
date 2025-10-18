@@ -11,6 +11,7 @@ import {InteractiveGridPattern} from "@/components/ui/shadcn-io/interactive-grid
 import TextPressure from "@/components/ui/shadcn-io/text-pressure";
 import { useAuth } from "@/hooks/useAuth";
 import {cn} from "@/lib/utils.ts";
+import { RevealOnScroll } from "@/components/landing/gsap/reveal-on-scroll.tsx";
 
 function Landing() {
     const {handleLogin, isAuthenticated} = useAuth();
@@ -26,14 +27,14 @@ function Landing() {
             <div className="relative min-w-[375px] h-full bg-gradient-to-b from-white via-purple-100 to-purple-300 dark:from-black dark:via-black dark:to-purple-950">
                 <div className="relative h-full w-full items-center justify-center">
                     <div className="relative z-10 flex flex-col items-center justify-center w-full min-h-screen pointer-events-auto">
-                        <ThemeSwitch/>
+                        <ThemeSwitch variant="landing" />
                         <InteractiveGridPattern
                             className={cn(
                                 "absolute left-0 top-0 [mask-image:radial-gradient(175px_circle_at_left,white,transparent)] lg:[mask-image:radial-gradient(250px_circle_at_left,white,transparent)] xl:[mask-image:radial-gradient(315px_circle_at_left,white,transparent)]",
                                 "skew-y-[20deg] rotate-180 inset-y-[30%] lg:inset-y-[20%] xl:inset-y-[10%] -z-10"
                             )}
                         />
-                        <div className="max-h-[24rem] max-h-[28rem] flex items-center justify-center w-full">
+                        <div className="min-h-[24rem] max-h-[28rem] flex items-center justify-center w-full">
                             <TextHoverEffect text="JPS"/>
                         </div>
                         <div className="flex items-center justify-center mb-20">
@@ -63,6 +64,7 @@ function Landing() {
                         </HoverBorderGradient>
                     </div>
                 </div>
+                <RevealOnScroll >
                 <div className="h-full w-full">
                     <div className="my-4 mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
                         <h2 className="text-5xl font-semibold text-center tracking-[-0.02em]">
@@ -77,9 +79,12 @@ function Landing() {
                         <LandingFeatures />
                     </div>
                 </div>
+                </RevealOnScroll>
+            <RevealOnScroll>
                 <div className="mx-6 sm:mx-8 md:mx-14 lg:mx-24 xl:mx-32 2xl:mx-52">
                     <LandingTestimonials />
                 </div>
+            </RevealOnScroll>
             </div>
             <div className="w-full max-h-[4rem]">
                 <div className="px-8 py-4 md:px-12">

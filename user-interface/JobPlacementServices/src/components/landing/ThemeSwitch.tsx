@@ -1,9 +1,16 @@
-import { Sun, Moon } from "lucide-react";
-import { Button } from "@/components/ui/button.tsx"
-import { useTheme } from "@/hooks/useTheme.tsx"
-import { useCallback } from "react";
+import {Moon, Sun} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx"
+import {useTheme} from "@/hooks/useTheme.tsx"
+import {useCallback} from "react";
+import Switch from "@/components/ui/switch.tsx";
 
-export default function ThemeSwitch() {
+type Variant = "dashboard" | "landing";
+
+interface ThemeSwitchProps {
+    variant: Variant;
+}
+
+export default function ThemeSwitch({ variant }: ThemeSwitchProps) {
     const { setTheme, resolvedTheme } = useTheme();
 
     const toggleTheme = useCallback(() => {
@@ -13,7 +20,7 @@ export default function ThemeSwitch() {
         style.id = styleId;
 
         // Circle-blur animation CSS centered on the button
-        const css = `
+        style.textContent = `
             @supports (view-transition-name: root) {
                 ::view-transition-old(root) { 
                     animation: none;
@@ -35,8 +42,6 @@ export default function ThemeSwitch() {
                 }
             }
         `;
-
-        style.textContent = css;
         document.head.appendChild(style);
 
         // Clean up animation styles after transition
@@ -64,9 +69,13 @@ export default function ThemeSwitch() {
         return resolvedTheme === "light" ? "moon" : "sun";
     };
 
+
+
     const iconState : "moon"|"sun" = getIconState();
 
-    return (
+    const isDark = resolvedTheme === "dark";
+
+    return variant === "landing" ? (
         <Button
             variant="ghost"
             size="icon"
@@ -76,14 +85,24 @@ export default function ThemeSwitch() {
             <Sun
                 className={`absolute inset-0 w-full h-full origin-center transition-transform duration-500 ease-in-out
                 ${iconState === "sun" ? "scale-100 rotate-0 opacity-100" : "scale-0 -rotate-90 opacity-0"}`}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '80%', height: '80%' }}
             />
             <Moon
                 className={`absolute inset-0 w-full h-full origin-center transition-transform duration-500 ease-in-out
                 ${iconState === "moon" ? "scale-100 rotate-0 opacity-100" : "scale-0 rotate-90 opacity-0"}`}
-                style={{ width: '100%', height: '100%' }}
+                style={{ width: '80%', height: '80%' }}
             />
             <span className="sr-only">Toggle theme</span>
         </Button>
+    ) : (
+        <div className="flex items-center space-x-3">
+            <Sun className={`size-4 ${isDark ? 'text-muted-foreground' : ''}`} />
+            <Switch
+                checked={isDark}
+                onCheckedChange={toggleTheme}
+                aria-label="Toggle theme"
+            />
+            <Moon className={`size-4 ${!isDark ? 'text-muted-foreground' : ''}`} />
+        </div>
     );
 }
