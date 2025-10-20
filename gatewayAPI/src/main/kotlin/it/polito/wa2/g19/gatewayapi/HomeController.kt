@@ -24,7 +24,7 @@ class HomeController {
         return mapOf("name" to "secure", "date" to LocalDateTime.now(), "principal" to authentication.principal)
     }
 
-    @CrossOrigin(origins = ["http://host.docker.internal:3000"])
+    @CrossOrigin(origins = ["http://host.docker.internal:3000", "http://localhost:3000", ])
     @GetMapping("/me")
     fun me(
         @CookieValue(name = "XSRF-TOKEN", required = false)

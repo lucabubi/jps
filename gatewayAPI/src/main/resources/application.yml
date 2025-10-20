@@ -1,0 +1,95 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+    include-stacktrace: ALWAYS
+
+spring:
+  application:
+    name: gatewayAPI
+  profiles:
+    active: dev
+
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${ISSUER_URI}
+        registration:
+          oidc-app-client:
+            provider: keycloak
+            client-id: ${KEYCLOAK_CLIENT_ID}
+            client-secret: ${KEYCLOAK_CLIENT_SECRET}
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://localhost:8083/login/oauth2/code/oidc-app-client"
+            scope:
+              - openid
+
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: CRM_professionals
+              uri: http://host.docker.internal:8080
+              predicates:
+                - Path=/API/professionals/**
+              filters:
+                - TokenRelay=
+
+            - id: CRM_customers
+              uri: http://host.docker.internal:8080
+              predicates:
+                - Path=/API/customers/**
+              filters:
+                - TokenRelay=
+
+            - id: CRM_joboffers
+              uri: http://host.docker.internal:8080
+              predicates:
+                - Path=/API/joboffers/**
+              filters:
+                - TokenRelay=
+
+            - id: CRM_contacts
+              uri: http://host.docker.internal:8080
+              predicates:
+                - Path=/API/contacts/**
+              filters:
+                - TokenRelay=
+
+            - id: CRM_messages
+              uri: http://host.docker.internal:8080
+              predicates:
+                - Path=/API/messages/**
+              filters:
+                - TokenRelay=
+
+            - id: communication_manager
+              uri: http://host.docker.internal:8081
+              predicates:
+                - Path=/API/emails/**
+              filters:
+                - TokenRelay=
+
+            - id: document_store
+              uri: http://host.docker.internal:8082
+              predicates:
+                - Path=/API/documents/**
+              filters:
+                - TokenRelay=
+
+            - id: analytics_crm
+              uri: http://host.docker.internal:8084
+              predicates:
+                - Path=/API/analytics/**
+              filters:
+                - TokenRelay=
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    org.springframework.web.client: DEBUG
+
+

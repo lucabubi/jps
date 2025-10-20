@@ -1,40 +1,57 @@
 #!/bin/bash
 
-# Navigate to gatewayAPI directory
-# shellcheck disable=SC2164
-cd "./gatewayAPI"
+set -euo pipefail
 
-# Build the gatewayAPI image
-./gradlew bootBuildImage --imageName=g19/gateway_api
-# Navigate to CRM directory
-cd "../CRM"
+PROJECT_ROOT=$(cd "$(dirname "$0")" && pwd)
+cd "$PROJECT_ROOT"
 
-# Build the CRM image
-./gradlew bootBuildImage --imageName=g19/crm
+# Optional: normalize ownership (uncomment if needed)
+# echo "Normalizzo ownership dei file (se necessario)..."
+# sudo chown -R "$(id -un)":"$(id -gn)" . || true
 
-cd "../document_store"
-# Build the document_store image
-./gradlew bootBuildImage --imageName=g19/document_store
+GRADLE_BUILD() {
+  local dir=$1
+  local image=$2
+  echo "[BUILD] $dir -> $image"
+  (cd "$dir" && ./gradlew --no-daemon bootBuildImage --imageName="$image")
+}
 
-# Navigate to communication_manager directory
-cd "../communication_manager"
+# Build backend images (no sudo)
+GRADLE_BUILD gatewayAPI g19/gateway_api
+GRADLE_BUILD CRM g19/crm
+GRADLE_BUILD document_store g19/document_store
+GRADLE_BUILD communication_manager g19/communication_manager
+GRADLE_BUILD analytics_crm g19/analytics_crm
 
-# Build the communication_manager image
-./gradlew bootBuildImage --imageName=g19/communication_manager
+# Frontend build
+echo "[BUILD] user-interface (JobPlacementServices) -> g19/user-interface"
+(cd user-interface/JobPlacementServices && docker build -t g19/user-interface .)
 
-cd "../analytics_crm"
-# Build the analytics_crm image
-./gradlew bootBuildImage --imageName=g19/analytics_crm
+# Ensure network exists
+if ! docker network inspect jps-net >/dev/null 2>&1; then
+  echo "[NET] Creo la rete jps-net"
+  docker network create jps-net
+fi
 
-# Navigate to user-interface directory
-cd "../user-interface/JobPlacementServices"
+# Compose up (aggregated)
+COMPOSE_FILES=( \
+  gatewayAPI/compose_mac.yaml \
+  CRM/compose.yaml \
+  analytics_crm/compose.yaml \
+  communication_manager/compose.yaml \
+  document_store/compose.yaml \
+  user-interface/JobPlacementServices/compose.yaml \
+)
 
-# Build the user-interface image
-docker build -t g19/user-interface .
-# shellcheck disable=SC2103
-cd ".."
-cd ".."
+COMPOSE_ARGS=()
+for f in "${COMPOSE_FILES[@]}"; do
+  COMPOSE_ARGS+=( -f "$f" )
+  if [[ ! -f $f ]]; then
+    echo "[WARN] File compose mancante: $f" >&2
+  fi
+done
 
-docker network create jps-net
-# Run docker-compose
-docker-compose -f gatewayAPI/compose_mac.yaml -f CRM/compose.yaml -f analytics_crm/compose.yaml -f communication_manager/compose.yaml -f document_store/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+echo "[UP] Avvio stack Docker..."
+docker compose "${COMPOSE_ARGS[@]}" up -d
+
+echo "[DONE] Build e avvio completati."

@@ -8,9 +8,15 @@
       "protocol": "openid-connect",
       "clientAuthenticatorType": "client-secret",
       "secret": "K5N59toSW1sKyJLgVVoWmqMbhhOpeIpx",
+      "standardFlowEnabled": true,
+      "publicClient": false,
       "redirectUris": [
-        "http://localhost:8083/login/oauth2/code/kc1client",
+        "http://localhost:8083/login/oauth2/code/oidc-app-client",
         "http://localhost:3000/dashboard"
+      ],
+      "webOrigins": [
+        "http://localhost:8083",
+        "http://localhost:3000"
       ],
       "attributes": {
         "post.logout.redirect.uris": "http://localhost:3000/"
@@ -91,13 +97,13 @@
     {
       "username": "testoperator",
       "enabled": true,
-      "email": "testoeprator@email.com",
+      "email": "testoperator@email.com",
       "firstName": "Test",
       "lastName": "Operator",
       "credentials": [
         {
           "type": "password",
-          "value": "testoperatorpassword"
+          "value": "password"
         }
       ],
       "realmRoles": ["operator"]
@@ -111,7 +117,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "testcustomerpassword"
+          "value": "password"
         }
       ],
       "realmRoles": ["customer"]
@@ -125,7 +131,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "testprofessionalpassword"
+          "value": "password"
         }
       ],
       "realmRoles": ["professional"]

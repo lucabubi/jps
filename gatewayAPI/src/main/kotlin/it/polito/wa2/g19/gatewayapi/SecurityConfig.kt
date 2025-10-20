@@ -28,7 +28,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
     @Bean
     fun securityFilterChain(httpSecurity: HttpSecurity): SecurityFilterChain {
         return httpSecurity
-            .authorizeHttpRequests  { it ->
+            .authorizeHttpRequests  {
                 it.requestMatchers("/", "login", "logout").permitAll()  // Endpoint pubblici
                 it.requestMatchers("/secure").authenticated()          // Endpoint protetti da login
                 it.requestMatchers("/user-interface").permitAll()     // Il frontend è accessibile senza login
@@ -49,7 +49,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
 class WebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000")
+            .allowedOrigins("http://localhost:3000", "http://host.docker.internal:3000", "http://user-interface:80")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)
