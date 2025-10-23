@@ -7,7 +7,8 @@ import {
     PieChart,
     Star,
     LayoutDashboard,
-    UserSearch
+    User,
+    Building2
 } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main.tsx"
@@ -55,12 +56,12 @@ export const sidebarData = {
     navOperator: [{
         title: "Customers",
         url: "/dashboard/customers",
-        icon: UserSearch,
+        icon: Building2,
     },
         {
             title: "Professionals",
             url: "/dashboard/professionals",
-            icon: UserSearch,
+            icon: User,
         }],
   navSecondary: [
     {

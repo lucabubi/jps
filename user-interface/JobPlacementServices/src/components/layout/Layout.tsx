@@ -73,6 +73,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                     <div className="flex items-center gap-2">
                         <ThemeSwitch variant="dashboard" />
                         <Separator orientation="vertical" className="data-[orientation=vertical]:h-4" />
+                        <span>TODO: IMPLEMENT SECOND PROFILE NAV</span>
                     </div>
                 </header>
 
