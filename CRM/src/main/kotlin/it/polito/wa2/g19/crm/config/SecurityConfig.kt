@@ -19,6 +19,7 @@ class SecurityConfig {
     @Value("\${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
     private lateinit var jwkSetUri: String
 
+
     @Bean
     fun jwtDecoder(): NimbusJwtDecoder {
         return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
@@ -54,8 +55,6 @@ class SecurityConfig {
             it.requestMatchers(HttpMethod.GET, "/API/contacts/**").hasAnyRole("operator", "customer", "professional")
             it.requestMatchers(HttpMethod.POST, "/API/contacts/**").hasRole("operator")
             it.requestMatchers(HttpMethod.PUT, "/API/contacts/**").hasRole("operator")
-
-            it.anyRequest().permitAll()
         }
             .oauth2ResourceServer {
                 it.jwt { jwtConfigurer ->

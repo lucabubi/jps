@@ -1,5 +1,6 @@
 {
   "realm": "kc1",
+  "displayName": "Job Placement Services",
   "enabled": true,
   "clients": [
     {
@@ -91,9 +92,43 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "communication-manager-service",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "35134d47be6855bdeffcb5643ed0893b",
+      "standardFlowEnabled": false,
+      "publicClient": false,
+      "serviceAccountsEnabled": true,
+      "attributes": {},
+      "defaultClientScopes": [],
+      "optionalClientScopes": [],
+      "protocolMappers": [
+        {
+          "name": "roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
     }
   ],
   "users": [
+    {
+      "username": "service-account-communication-manager-service",
+      "enabled": true,
+      "serviceAccountClientId": "communication-manager-service",
+      "realmRoles": ["operator"]
+    },
     {
       "username": "testoperator",
       "enabled": true,

@@ -15,6 +15,17 @@ spring:
 
   security:
     oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: ${ISSUER_URI}
+            token-uri: ${KEYCLOAK_TOKEN_URI}
+        registration:
+            keycloak:
+                provider: keycloak
+                client-id: communication-manager-service
+                client-secret: ${KEYCLOAK_CM_SECRET}
+                authorization-grant-type: client_credentials
       resourceserver:
         jwt:
           issuer-uri: ${ISSUER_URI}
@@ -41,3 +52,5 @@ camel:
 
 server:
   port: 8081
+
+
