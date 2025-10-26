@@ -1,12 +1,15 @@
 package it.polito.wa2.g19.analytics.listeners
 
+import com.fasterxml.jackson.core.type.TypeReference // <-- Importa TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
+import it.polito.wa2.g19.analytics.events.CustomerPayload // <-- Importa il nuovo Payload
+import it.polito.wa2.g19.analytics.events.DebeziumEvent // <-- Importa l'evento generico
 import it.polito.wa2.g19.analytics.models.CustomerDocument
 import it.polito.wa2.g19.analytics.repositories.CustomerRepository
 import mu.KotlinLogging
 import org.springframework.kafka.annotation.KafkaListener
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 private val logger = KotlinLogging.logger {}
 
@@ -16,53 +19,64 @@ class CustomerListener(
     private val om: ObjectMapper
 ) {
 
-    // Evento atteso in JSON (stesso contratto del CRM)
-    data class CustomerEvent(
-        val id: Long,
-        val fullName: String? = null,
-        val email: String? = null,
-        val phone: String? = null,
-        val tags: Set<String>? = null,
-        val notes: List<String>? = null,
-        val eventType: String,
-        val changedFields: Set<String>? = null,
-        val occurredAt: Long? = null
-    )
+    // Niente più data class CustomerEvent qui!
 
     @KafkaListener(
-        topics = ["customerTopic"],
-        groupId = "analytics-crm"
+        topics = ["\${app.kafka.customer-topic}"], // <-- 1. Topic aggiornato
+        groupId = "analytics-crm" // Il group-id va bene
     )
     fun onMessage(value: String) {
-        val evt = om.readValue<CustomerEvent>(value)
-        when (evt.eventType.uppercase()) {
-            "CREATED", "UPDATED", "UPSERT" -> upsert(evt)
-            "DELETED" -> delete(evt.id)
-            else -> logger.warn { "Evento customer ignorato: type=${evt.eventType}" }
+
+        // 2. Deserializza usando il tipo generico DebeziumEvent<CustomerPayload>
+        val evt = om.readValue<DebeziumEvent<CustomerPayload>>(
+            value,
+            object : TypeReference<DebeziumEvent<CustomerPayload>>() {}
+        )
+
+        val payload = evt.payload ?: return
+        logger.info { "Debezium Customer Event op=${payload.op}" }
+
+        // 3. Logica basata su 'op'
+        when (payload.op) {
+            "c", "u", "r" -> upsert(payload.after, payload.op, payload.tsMs)
+            "d" -> delete(payload.before)
+            else -> logger.warn { "Evento customer ignorato: op=${payload.op}" }
         }
     }
 
-    private fun upsert(evt: CustomerEvent) {
-        val current = repo.findById(evt.id).orElse(
-            CustomerDocument(id = evt.id)
+    private fun upsert(data: CustomerPayload?, op: String?, ts: Long?) {
+        if (data == null) {
+            logger.warn { "Ricevuto evento upsert (op=$op) con payload 'after' nullo." }
+            return
+        }
+
+        // La tua logica di upsert era già buona, la adattiamo
+        val current = repo.findById(data.id).orElse(
+            CustomerDocument(id = data.id)
         )
 
-        current.fullName = evt.fullName ?: current.fullName
-        current.email = evt.email ?: current.email
-        current.phone = evt.phone ?: current.phone
-        current.tags = evt.tags ?: current.tags
-        current.notes = evt.notes ?: current.notes
+        // Mappa da CustomerPayload (dati da 'after')
+        current.fullName = data.fullName
+        current.email = data.email
+        current.phone = data.phone
+        current.tags = data.tags
+        current.notes = data.notes
 
-        current.lastEventType = evt.eventType
-        current.lastChangedFields = evt.changedFields ?: emptySet()
-        current.lastOccurredAt = evt.occurredAt
+        // Mappa metadati da Debezium
+        current.lastEventType = op
+        current.lastOccurredAt = ts ?: Instant.now().toEpochMilli()
+        current.lastChangedFields = null // (Calcolo complesso, per ora nullo)
 
         repo.save(current)
-        logger.info { "Customer upsert id=${evt.id} type=${evt.eventType}" }
+        logger.info { "Customer upsert id=${data.id} op=$op" }
     }
 
-    private fun delete(id: Long) {
-        repo.deleteById(id)
-        logger.info { "Customer deleted id=$id" }
+    private fun delete(data: CustomerPayload?) {
+        if (data == null) {
+            logger.warn { "Ricevuto evento delete con payload 'before' nullo." }
+            return
+        }
+        repo.deleteById(data.id)
+        logger.info { "Customer deleted id=${data.id}" }
     }
 }

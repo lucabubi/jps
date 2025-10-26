@@ -2,11 +2,7 @@ package it.polito.wa2.g19.crm.services
 
 import it.polito.wa2.g19.crm.dtos.*
 import it.polito.wa2.g19.crm.entities.*
-import it.polito.wa2.g19.crm.events.toCreatedCustomerEvent
-import it.polito.wa2.g19.crm.events.toCustomerDeletedEvent
-import it.polito.wa2.g19.crm.events.toCustomerNotesUpdatedEvent
 import it.polito.wa2.g19.crm.exceptions.*
-import it.polito.wa2.g19.crm.kafka.CustomerEventsProducer
 import it.polito.wa2.g19.crm.repositories.*
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -16,7 +12,6 @@ import mu.KotlinLogging
 @Transactional
 class CustomerServiceImpl (
     private val customerRepository: CustomerRepository,
-    private val customerEventsProducer: CustomerEventsProducer
 ) : CustomerService {
     private val logger = KotlinLogging.logger {}
 
@@ -32,10 +27,7 @@ class CustomerServiceImpl (
         val savedCustomer = customerRepository.save(customer)
         logger.info("Customer saved: $savedCustomer")
         // Convert entity back to DTO and return
-        //publish event
-        val savedDTO = savedCustomer.toDTO()
-        customerEventsProducer.publish(savedDTO.toCreatedCustomerEvent())
-        return savedDTO
+        return savedCustomer.toDTO()
     }
 
     override fun getCustomers(): List<CustomerDTO> {
@@ -64,10 +56,7 @@ class CustomerServiceImpl (
         // .save added for good practice, even if not needed because of "dirty checking" performed by Spring Data JPA
         customerRepository.save(customer)
         logger.info { "Customer id:$id notes updated" }
-        val updatedDTO = customer.toDTO()
-        //publish event
-        customerEventsProducer.publish(updatedDTO.toCustomerNotesUpdatedEvent(notes))
-        return updatedDTO
+        return customer.toDTO()
     }
 
 

@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
 import { paginationType } from "@/routes/dashboard/Professionals.tsx";
+
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select.tsx";
 
 interface DataTableProps<TData, TValue> {
@@ -39,7 +40,7 @@ interface DataTableProps<TData, TValue> {
     data: TData[],
     pagination: paginationType,
     setPagination: Dispatch<SetStateAction<paginationType>>,
-    variant: "job_offer" | "professional" | "customer"
+    variant: "job_offer" | "professional" | "customer" | "message",
 }
 
 export function DataTable<TData, TValue>({

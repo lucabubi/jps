@@ -37,6 +37,17 @@ export type Professional = {
     location: string | null;
 };
 
+export type Message = {
+    id: number;
+    subject: string;
+    body: string;
+    sender: string;
+    channel: "PHONE_CALL" | "TEXT_MESSAGE" | "EMAIL";
+    date: string;
+    priority: "LOW" | "MEDIUM" | "HIGH";
+    state: "RECEIVED" | "READ" | "DISCARDED" | "PROCESSING" | "DONE" | "FAILED";
+}
+
 // URL of the backend server
 const gatewayBackendUrl = "http://localhost:8083";
 
@@ -125,4 +136,29 @@ async function deleteContactById(contactId: number): Promise<boolean> {
     return result;
 }
 
-export { fetchUser, fetchProfessionals, deleteContactById };
+async function fetchMessages(pageIndex: number = 0, pageSize: number = 10): Promise<{ total: number; data: Message[] }> {
+    let data: Message[] = [];
+    let total = 0;
+
+    try {
+        toast.info("Fetching messages from CRM...");
+        const res = await fetch(`${gatewayBackendUrl}/API/messages/?page=${pageIndex}&size=${pageSize}`, { credentials: 'include' });
+
+        if (res.ok) {
+            const headerTotal = res.headers.get('X-Total-Count') ?? res.headers.get('x-total-count');
+            const parsedTotal = headerTotal ? parseInt(headerTotal, 10) : 0;
+            total = Number.isNaN(parsedTotal) ? 0 : parsedTotal;
+
+            data = await res.json();
+            toast.success("Messages retrieved successfully.");
+        } else {
+            toast.error("Error contacting CRM/Gateway server.");
+        }
+    } catch {
+        toast.error("Error contacting CRM/Gateway server.");
+    }
+
+    return { total, data };
+}
+
+export { fetchUser, fetchProfessionals, fetchMessages, deleteContactById };

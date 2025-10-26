@@ -5,6 +5,7 @@ import Support from '@/routes/dashboard/Support';
 import Customers from "@/routes/dashboard/Customers.tsx";
 import Professionals from "@/routes/dashboard/Professionals.tsx";
 import { ProtectedLayout } from "@/hooks/useAuth";
+import Messages from "@/routes/dashboard/Messages.tsx";
 //import { toast } from 'sonner';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                         <Route path="support" element={<Support />} />
                         <Route path="customers" element={<Customers />} />
                         <Route path="professionals" element={<Professionals />} />
+                        <Route path="messages" element={<Messages />} />
                     </Route>
 
                     {/* All other not-found routes redirect to landing page with not found error message */}

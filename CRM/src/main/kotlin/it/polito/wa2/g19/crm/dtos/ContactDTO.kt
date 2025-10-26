@@ -2,8 +2,6 @@ package it.polito.wa2.g19.crm.dtos
 
 import it.polito.wa2.g19.crm.entities.Category
 import it.polito.wa2.g19.crm.entities.Contact
-import it.polito.wa2.g19.crm.utils.ContactPayload
-import kotlin.text.category
 
 data class ContactDTO (
     val id: Long = 0,
@@ -48,16 +46,6 @@ data class ContactDTO (
         return newContact
     }
 
-    fun toPayload(): ContactPayload =
-        ContactPayload(
-            name = this.name,
-            surname = this.surname,
-            ssn = this.ssn,
-            category = this.category,
-            emails = this.emails.map { it.email }.toSet(),
-            telephones = this.telephones.map { it.telephone }.toSet(),
-            addresses = this.addresses.map { it.address }.toSet()
-        )
 }
 
 

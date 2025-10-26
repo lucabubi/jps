@@ -8,7 +8,7 @@ spring:
     consumer:
       bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
       group-id: analytics_crm
-      key-deserializer: org.apache.kafka.common.serialization.LongDeserializer
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
 
   security:
@@ -21,3 +21,9 @@ spring:
   data:
     mongodb:
       uri: mongodb://mongo:27017/analytics
+
+app:
+  kafka:
+    job-offer-topic: "crm_server.public.job_offers"
+    customer-topic: "crm_server.public.customers"
+    professional-topic: "crm_server.public.professionals"

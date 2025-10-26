@@ -7,7 +7,8 @@ import {
     PieChart,
     Star,
     LayoutDashboard,
-    UserSearch
+    UserSearch,
+    Mail
 } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main.tsx"
@@ -61,6 +62,11 @@ export const sidebarData = {
             title: "Professionals",
             url: "/dashboard/professionals",
             icon: UserSearch,
+        },
+        {
+            title: "Messages",
+            url: "/dashboard/messages",
+            icon: Mail,
         }],
   navSecondary: [
     {
