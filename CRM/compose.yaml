@@ -16,49 +16,47 @@ services:
       SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
 
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
+    image: confluentinc/cp-zookeeper:7.6.1 # Presa versione da _mac.yaml (più recente)
     hostname: zookeeper
-    ports:
-      - "2181:2181"
-    networks:
-      - default # Assicurati che sia sulla rete corretta
+    container_name: zookeeper
+    networks: [ jps-net ]
+    ports: [ "2181:2181" ] # Porta Zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
 
   kafka:
-    image: confluentinc/cp-kafka:7.5.0
+    image: confluentinc/cp-kafka:7.6.1 # Presa versione da _mac.yaml
     hostname: kafka
-    ports:
-      - "29092:29092" # Porta per la comunicazione ESTERNA a Docker
-      - "9092:9092" # Porta per la comunicazione INTERNA a Docker
+    container_name: kafka
     depends_on:
       - zookeeper
-    networks:
-      - default
+    networks: [ jps-net ]
+    ports:
+      - "9092:9092"     # INTERNAL (containers use kafka:9092)
+      - "29092:29092"   # EXTERNAL (host uses localhost:29092)
     environment:
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_MIN_INSYNC_REPLICAS: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
   connect:
-    # Usiamo l'immagine ufficiale di Debezium che CONTIENE Kafka Connect
     image: debezium/connect:2.5
     hostname: connect
     ports:
-      - "8085:8085"
+      - "8085:8083"
     depends_on:
       - kafka
       - postgres
-    networks:
-      - default
+    networks: [ jps-net ]
     environment:
       BOOTSTRAP_SERVERS: 'kafka:9092'
       GROUP_ID: 'connect-cluster-crm'

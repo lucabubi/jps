@@ -1,3 +1,7 @@
+networks:
+  jps-net:
+    name: jps-net
+
 services:
   gateway_api:
     image: g19/gateway_api
@@ -19,39 +23,3 @@ services:
       - "9090:8080"
     env_file:
       - ../.env
-
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.1
-    hostname: zookeeper
-    container_name: zookeeper
-    networks: [ jps-net ]
-    ports: [ "2181:2181" ]
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-
-  kafka:
-    image: confluentinc/cp-kafka:7.6.1
-    hostname: kafka
-    container_name: kafka
-    depends_on:
-      - zookeeper
-    networks:
-      jps-net:
-        aliases: [ kafka ]
-    ports:
-      - "9092:9092"     # INTERNAL (containers use kafka:9092)
-      - "29092:29092"   # EXTERNAL (host uses localhost:29092)
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,EXTERNAL://0.0.0.0:29092
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://localhost:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
-      # Single-broker safe defaults
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_MIN_INSYNC_REPLICAS: 1
-      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
