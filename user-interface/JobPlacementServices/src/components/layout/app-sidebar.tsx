@@ -7,7 +7,8 @@ import {
     PieChart,
     Star,
     LayoutDashboard,
-    UserSearch,
+    User,
+    Building2,
     Mail
 } from "lucide-react"
 
@@ -56,12 +57,12 @@ export const sidebarData = {
     navOperator: [{
         title: "Customers",
         url: "/dashboard/customers",
-        icon: UserSearch,
+        icon: Building2,
     },
         {
             title: "Professionals",
             url: "/dashboard/professionals",
-            icon: UserSearch,
+            icon: User,
         },
         {
             title: "Messages",

@@ -5,9 +5,10 @@ import { Professional } from "@/lib/API";
 import { createProfessionalsColumns } from "@/components/dashboard/CreateProfessionalsColumns.tsx";
 import { DataTable } from "@/components/ui/data-table";
 import { Spinner as SpinnerIO } from "@/components/ui/shadcn-io/spinner/spinner.tsx";
-import {Button} from "@/components/ui/button.tsx";
-import {RefreshCcw, UserPlus} from "lucide-react";
-import {Spinner} from "@/components/ui/spinner.tsx";
+import { Button } from "@/components/ui/button.tsx";
+import { Spinner } from "@/components/ui/spinner.tsx";
+import CreateProfessionalButton from "@/components/dashboard/CreateProfessionalButton";
+import { RefreshCcw } from "lucide-react";
 
 export type paginationType = {
     pageIndex: number;
@@ -78,10 +79,7 @@ export default function Professionals() {
                         { isLoading ? <Spinner className="text-violet-600" /> : <RefreshCcw /> }
                         <span className="hidden sm:inline">Refresh</span>
                     </Button>
-                    <Button disabled={isLoading} size="sm" onClick={() => {}}>
-                        <UserPlus />
-                        Add Professional
-                    </Button>
+                    <CreateProfessionalButton isLoading={isLoading} />
                 </div>
             </div>
             { isLoading ?
