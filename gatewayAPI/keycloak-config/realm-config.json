@@ -2,6 +2,25 @@
   "realm": "kc1",
   "displayName": "Job Placement Services",
   "enabled": true,
+  "clientScopes": [
+    {
+      "name": "audience-mapper",
+      "protocol": "openid-connect",
+      "protocolMappers": [
+        {
+          "name": "audience-for-gateway",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "userinfo.token.claim": "false",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "included.client.audience": "kc1client"
+          }
+        }
+      ]
+    }
+  ],
   "clients": [
     {
       "clientId": "kc1client",
@@ -103,7 +122,9 @@
       "publicClient": false,
       "serviceAccountsEnabled": true,
       "attributes": {},
-      "defaultClientScopes": [],
+      "defaultClientScopes": [
+        "audience-mapper"
+      ],
       "optionalClientScopes": [],
       "protocolMappers": [
         {

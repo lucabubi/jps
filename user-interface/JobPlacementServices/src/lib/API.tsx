@@ -72,7 +72,7 @@ const gatewayBackendUrl = "http://localhost:8083";
 
 // Function to fetch user data from the backend
 async function fetchUser(): Promise<UserOuterInterface | null> {
-    let result: UserOuterInterface | null = null;
+    let result: UserOuterInterface | null;
 
     try {
         const res = await fetch(`${gatewayBackendUrl}/me`, { credentials: 'include' });

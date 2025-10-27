@@ -49,7 +49,7 @@ class SecurityConfig(val crr: ClientRegistrationRepository) {
 class WebConfig : WebMvcConfigurer {
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("http://localhost:3000", "http://host.docker.internal:3000", "http://user-interface:80")
+            .allowedOrigins("http://localhost:3000", "http://host.docker.internal:3000", "http://host.docker.internal:8081")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true)

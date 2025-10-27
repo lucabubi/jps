@@ -23,9 +23,8 @@ type OnDirty = () => void;
 function MessageStateBadge(state: string) {
     switch (state) {
         case 'RECEIVED':
-            return <Badge className='rounded-md border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 hover:bg-green-600/10 dark:hover:bg-green-400/10'>
-                <MailPlus className='size-3 mr-1' />
-                Created
+            return <Badge className='rounded-md border-none bg-gray-600/10 text-gray-600 dark:bg-gray-400/10 dark:text-gray-400 dark:focus-visible:ring-gray-400/40 hover:bg-gray-600/10 dark:hover:bg-gray-400/10'>                <MailPlus className='size-3 mr-1' />
+                Received
             </Badge>;
         case 'READ':
             return <Badge className='rounded-md border-none bg-purple-600/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400 dark:focus-visible:ring-purple-400/40 hover:bg-purple-600/10 dark:hover:bg-purple-400/10'>
