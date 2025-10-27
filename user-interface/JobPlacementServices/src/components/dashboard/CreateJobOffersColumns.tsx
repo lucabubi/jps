@@ -6,7 +6,7 @@ import { ListPlus, UserSearch, Users, UserCheck, FileCheck2, FileX2 } from "luci
 
 type OnDirty = () => void;
 
-function JobOfferStateBadge(state: string) {
+function JobOfferStatusBadge(state: string) {
     switch (state) {
         case 'CREATED':
             return <Badge className='rounded-md border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 hover:bg-green-600/10 dark:hover:bg-green-400/10'>
@@ -14,17 +14,17 @@ function JobOfferStateBadge(state: string) {
                 Created
             </Badge>;
         case 'SELECTION_PHASE':
-            return <Badge className='rounded-md border-none bg-amber-600/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400 dark:focus-visible:ring-amber-400/40 hover:bg-amber-600/10 dark:hover:bg-amber-400/10'>
+            return <Badge className='rounded-md border-none bg-purple-600/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400 dark:focus-visible:ring-purple-400/40 hover:bg-purple-600/10 dark:hover:bg-purple-400/10'>
                 <UserSearch className='size-3 mr-1' />
                 Selection Phase
             </Badge>;
         case 'CANDIDATE_PROPOSAL':
-            return <Badge className='rounded-md border-none bg-amber-600/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400 dark:focus-visible:ring-amber-400/40 hover:bg-amber-600/10 dark:hover:bg-amber-400/10'>
+            return <Badge className='rounded-md border-none bg-purple-600/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400 dark:focus-visible:ring-purple-400/40 hover:bg-purple-600/10 dark:hover:bg-purple-400/10'>
                 <Users className='size-3 mr-1' />
                 Candidate Proposal
             </Badge>;
         case 'CONSOLIDATED':
-            return <Badge className='rounded-md border-none bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400 dark:focus-visible:ring-green-400/40 hover:bg-green-600/10 dark:hover:bg-green-400/10'>
+            return <Badge className='rounded-md border-none bg-purple-600/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400 dark:focus-visible:ring-purple-400/40 hover:bg-purple-600/10 dark:hover:bg-purple-400/10'>
                 <UserCheck className='size-3 mr-1' />
                 Consolidated
             </Badge>;
@@ -51,7 +51,7 @@ export const createJobOffersColumns = (_onDirty: OnDirty): ColumnDef<JobOffer>[]
         header: "Status",
         cell: ({getValue}) => {
             const status = getValue<string>();
-            return JobOfferStateBadge(status);
+            return JobOfferStatusBadge(status);
         }
     },
     { accessorKey: "duration", header: "Duration" },
