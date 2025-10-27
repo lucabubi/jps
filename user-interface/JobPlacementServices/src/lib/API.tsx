@@ -37,6 +37,13 @@ export type Professional = {
     location: string | null;
 };
 
+export type Customer = {
+    id: number;
+    contact: Contact;
+    notes: string[];
+    jobOffers: JobOffer[];
+};
+
 export type Message = {
     id: number;
     subject: string;
@@ -48,8 +55,20 @@ export type Message = {
     state: "RECEIVED" | "READ" | "DISCARDED" | "PROCESSING" | "DONE" | "FAILED";
 }
 
+export type JobOffer = {
+    id: number;
+    description: string;
+    status: "CREATED" | "SELECTION_PHASE" | "CANDIDATE_PROPOSAL" | "CONSOLIDATED" | "DONE" | "ABORTED";
+    duration: number;
+    customer: Customer;
+    value: number;
+    professional: Professional;
+    notes: string[];
+}
+
 // URL of the backend server
 const gatewayBackendUrl = "http://localhost:8083";
+
 
 // Function to fetch user data from the backend
 async function fetchUser(): Promise<UserOuterInterface | null> {
@@ -161,4 +180,51 @@ async function fetchMessages(pageIndex: number = 0, pageSize: number = 10): Prom
     return { total, data };
 }
 
-export { fetchUser, fetchProfessionals, fetchMessages, deleteContactById };
+async function fetchJobOffers(pageIndex: number = 0, pageSize: number = 10): Promise<{ total: number; data: JobOffer[] }> {
+    let data: JobOffer[] = [];
+    let total = 0;
+
+    try {
+        toast.info("Fetching JobOffers from CRM...");
+        const res = await fetch(`${gatewayBackendUrl}/API/joboffers/?page=${pageIndex}&size=${pageSize}`, { credentials: 'include' });
+
+        if (res.ok) {
+            const headerTotal = res.headers.get('X-Total-Count') ?? res.headers.get('x-total-count');
+            const parsedTotal = headerTotal ? parseInt(headerTotal, 10) : 0;
+            total = Number.isNaN(parsedTotal) ? 0 : parsedTotal;
+
+            data = await res.json();
+            toast.success("Job Offers retrieved successfully.");
+        } else {
+            toast.error("Error contacting CRM/Gateway server.");
+        }
+    } catch {
+        toast.error("Error contacting CRM/Gateway server.");
+    }
+
+    return { total, data };
+}
+
+// Function to fetch customer data by ID
+async function fetchCustomer(id: number): Promise<Customer> {
+    const response = await fetch(`${gatewayBackendUrl}/customers/${id}`, {
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch customer');
+    }
+    return response.json();
+}
+
+async function fetchProfessional(id: number): Promise<Professional> {
+    const response = await fetch(`${gatewayBackendUrl}/professionals/${id}`, {
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch professional');
+    }
+    return response.json();
+}
+
+
+export { fetchUser, fetchProfessionals, fetchMessages, fetchJobOffers, deleteContactById, fetchCustomer, fetchProfessional };

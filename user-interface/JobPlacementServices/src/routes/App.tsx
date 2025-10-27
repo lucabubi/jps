@@ -6,6 +6,7 @@ import Customers from "@/routes/dashboard/Customers.tsx";
 import Professionals from "@/routes/dashboard/Professionals.tsx";
 import { ProtectedLayout } from "@/hooks/useAuth";
 import Messages from "@/routes/dashboard/Messages.tsx";
+import JobOffers from "@/routes/dashboard/JobOffers.tsx";
 //import { toast } from 'sonner';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                         <Route path="support" element={<Support />} />
                         <Route path="customers" element={<Customers />} />
                         <Route path="professionals" element={<Professionals />} />
+                        <Route path="job-offers" element={<JobOffers />} />
                         <Route path="messages" element={<Messages />} />
                     </Route>
 

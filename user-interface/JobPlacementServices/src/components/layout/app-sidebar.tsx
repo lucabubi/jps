@@ -9,7 +9,8 @@ import {
     LayoutDashboard,
     User,
     Building2,
-    Mail
+    Mail,
+    Handshake
 } from "lucide-react"
 
 import { NavMain } from "@/components/layout/nav-main.tsx"
@@ -63,6 +64,11 @@ export const sidebarData = {
             title: "Professionals",
             url: "/dashboard/professionals",
             icon: User,
+        },
+        {
+            title: "Job Offers",
+            url: "/dashboard/job-offers",
+            icon: Handshake,
         },
         {
             title: "Messages",
