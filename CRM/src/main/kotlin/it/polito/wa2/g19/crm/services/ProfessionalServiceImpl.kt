@@ -89,4 +89,15 @@ class ProfessionalServiceImpl(
         logger.info { "Professional id:$id updated" }
         return professional.toDTO()
     }
+
+    override fun deleteProfessional(id: Long) {
+        val professional = professionalRepository.findById(id)
+            .orElseThrow { ProfessionalNotFoundException("Professional with id $id not found") }
+        val activeJobOffer = professional.jobOffers.filter { it.status == JobOffer.Status.CONSOLIDATED }
+        if(activeJobOffer.isNotEmpty())
+            throw ProfessionalNotAvailableException("Professional with id $id is currently working")
+        logger.info { "Deleting professional id:$id..." }
+        professionalRepository.delete(professional)
+        logger.info { "Professional id:$id deleted" }
+    }
 }

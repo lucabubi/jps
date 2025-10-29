@@ -29,7 +29,7 @@ data class CustomerDTO(
             id = this.id,
             contact = this.contact.toEntity(),
             notes = this.notes,
-            jobOffers = this.jobOffers.map { it.toEntity() }.toSet()
+            jobOffers = this.jobOffers.map { it.toEntity() }.toMutableSet()
         )
     }
 }

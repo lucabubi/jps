@@ -31,4 +31,10 @@ class CustomerController(private val customerService: CustomerService) {
         val customerDTO = customerService.updateCustomerNotes(id, notes)
         return ResponseEntity.ok(customerDTO)
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteCustomer(@PathVariable id: Long) : ResponseEntity<Void> {
+        customerService.deleteCustomer(id)
+        return ResponseEntity.noContent().build()
+    }
 }

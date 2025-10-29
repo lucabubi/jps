@@ -12,6 +12,7 @@ class JobOffer(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long = 0,
+    var title: String,
     var description: String = "",
     var status: Status = Status.CREATED,
     var duration: Int = 0,
@@ -31,6 +32,7 @@ class JobOffer(
     fun toDTO() : JobOfferDTO {
         return JobOfferDTO(
             id = this.id,
+            title = this.title,
             description = this.description,
             status = this.status,
             duration = this.duration,

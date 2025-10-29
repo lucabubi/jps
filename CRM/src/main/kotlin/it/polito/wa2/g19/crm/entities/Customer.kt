@@ -15,7 +15,7 @@ class Customer(
     @Column(length = 1000)
     var notes: List<String> = emptyList(),
     @OneToMany(mappedBy = "customer")
-    var jobOffers: Set<JobOffer> = emptySet()
+    var jobOffers: MutableSet<JobOffer> = mutableSetOf()
 ){
     fun toDTO() = CustomerDTO(
         id = this.id,

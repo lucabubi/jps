@@ -44,7 +44,7 @@ class SecurityConfig {
             it.requestMatchers(HttpMethod.POST, "/API/documents/**").hasAnyRole("operator","customer", "professional")
             it.requestMatchers(HttpMethod.PUT, "/API/documents/**").hasAnyRole("operator","customer", "professional")
             it.requestMatchers(HttpMethod.DELETE, "/API/documents/**").hasAnyRole("operator", "customer", "professional")
-            it.anyRequest().permitAll()
+            it.anyRequest().denyAll()
         }
             .oauth2ResourceServer {
                 it.jwt { jwtConfigurer ->

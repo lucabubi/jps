@@ -20,7 +20,7 @@ class CustomerServiceImpl (
         val customer = Customer(
             contact = customerDTO.contact.toEntity(),
             notes = customerDTO.notes,
-            jobOffers = customerDTO.jobOffers.map { it.toEntity() }.toSet()
+            jobOffers = customerDTO.jobOffers.map { it.toEntity() }.toMutableSet()
         )
         logger.info("Creating customer: $customer")
         // Save to database
@@ -47,6 +47,18 @@ class CustomerServiceImpl (
         logger.info("Customer retrieved: $customer")
         // Convert entity to DTO and return
         return customer.toDTO()
+    }
+
+    override fun deleteCustomer(customerId: Long) {
+        logger.info("Deleting customer with id: $customerId")
+        // Check if customer exists
+        if (!customerRepository.existsById(customerId)) {
+            logger.error("Customer with id $customerId not found")
+            throw CustomerNotFoundException("Customer with id $customerId not found")
+        }
+        // Delete customer
+        customerRepository.deleteById(customerId)
+        logger.info("Customer with id $customerId deleted")
     }
 
     override fun updateCustomerNotes(id: Long, notes: List<String>) : CustomerDTO {

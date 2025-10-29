@@ -2,12 +2,14 @@ package it.polito.wa2.g19.crm.dtos
 
 import it.polito.wa2.g19.crm.entities.Category
 import it.polito.wa2.g19.crm.entities.Contact
+import it.polito.wa2.g19.crm.entities.Region
 
 data class ContactDTO (
     val id: Long = 0,
     val name: String,
     val surname: String,
     val ssn: String? = null,
+    val region: Region,
     val category: Category = Category.UNKNOWN,
     val emails: Set<EmailDTO> = emptySet(),
     val addresses: Set<AddressDTO> = emptySet(),
@@ -38,11 +40,12 @@ data class ContactDTO (
             name = this.name,
             surname = this.surname,
             ssn = this.ssn,
-            category = this.category
+            category = this.category,
+            region = this.region
         )
-        newContact.emails = this.emails.map { it.toEntity(newContact) }.toSet()
-        newContact.telephones = this.telephones.map { it.toEntity(newContact) }.toSet()
-        newContact.addresses = this.addresses.map { it.toEntity(newContact) }.toSet()
+        newContact.emails = this.emails.map { it.toEntity(newContact) }.toMutableSet()
+        newContact.telephones = this.telephones.map { it.toEntity(newContact) }.toMutableSet()
+        newContact.addresses = this.addresses.map { it.toEntity(newContact) }.toMutableSet()
         return newContact
     }
 

@@ -18,7 +18,7 @@ class Professional (
     var skills: Set<String> = emptySet(),
     var dailyRate: Float = 0.0f,
     @OneToMany(mappedBy = "professional", cascade = [CascadeType.ALL])
-    var jobOffers: Set<JobOffer> = emptySet(),
+    var jobOffers: MutableSet<JobOffer> = mutableSetOf(),
     var employmentState: State = State.AVAILABLE_FOR_WORK,
     var location: String? = null
 ) {

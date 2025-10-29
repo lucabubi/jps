@@ -16,5 +16,5 @@ interface ProfessionalService {
     ) : List<ProfessionalDTO>
     fun getProfessional(professionalId: Long): ProfessionalDTO
     fun updateProfessional(id: Long, updateDTO: ProfessionalUpdateDTO) : ProfessionalDTO
-
+    fun deleteProfessional(id: Long)
 }

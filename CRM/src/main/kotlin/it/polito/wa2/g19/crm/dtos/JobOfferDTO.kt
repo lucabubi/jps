@@ -5,6 +5,7 @@ import it.polito.wa2.g19.crm.entities.JobOffer.Status
 
 data class JobOfferDTO(
     val id: Long = 0,
+    val title: String,
     val description: String = "",
     val status: Status = Status.CREATED,
     val duration: Int = 0,
@@ -17,6 +18,7 @@ data class JobOfferDTO(
     fun toEntity() : JobOffer {
         return JobOffer(
             id = this.id,
+            title = this.title,
             description = this.description,
             status = this.status,
             duration = this.duration,

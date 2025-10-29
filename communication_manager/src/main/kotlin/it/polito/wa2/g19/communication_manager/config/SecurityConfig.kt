@@ -39,7 +39,7 @@ class SecurityConfig {
 
         return http.authorizeHttpRequests {
             it.requestMatchers("/API/emails/**").hasRole("operator")
-            it.anyRequest().permitAll()
+            it.anyRequest().denyAll()
         }
             .oauth2ResourceServer {
                 it.jwt { jwtConfigurer ->

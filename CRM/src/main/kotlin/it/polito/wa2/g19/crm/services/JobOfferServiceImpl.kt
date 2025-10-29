@@ -28,6 +28,7 @@ class JobOfferServiceImpl(
 
         val jobOffer = JobOfferDTO(
             description = createJobOfferDTO.description,
+            title = createJobOfferDTO.title,
             duration = createJobOfferDTO.duration,
             notes = createJobOfferDTO.notes,
             requiredSkills = createJobOfferDTO.requiredSkills,

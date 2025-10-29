@@ -64,13 +64,13 @@ class MessageServiceImpl(
         if(message.channel == Channel.EMAIL){
             val email = emailRepository.findByEmailContaining(message.sender).firstOrNull()
             if(email == null) {
-                val newContact = CreateContactDTO("unknown", "unknown", emails = listOf(message.sender))
+                val newContact = CreateContactDTO("unknown", "unknown", region= Region.UNKNOWN, emails = listOf(message.sender))
                 contactService.createContact(newContact)
             }
         }else{
             val telephone = telephoneRepository.findByTelephoneContaining(message.sender).firstOrNull()
             if(telephone == null) {
-                val newContact = CreateContactDTO("unknown", "unknown", telephones = listOf(message.sender))
+                val newContact = CreateContactDTO("unknown", "unknown", region= Region.UNKNOWN, telephones = listOf(message.sender))
                 contactService.createContact(newContact)
             }
         }

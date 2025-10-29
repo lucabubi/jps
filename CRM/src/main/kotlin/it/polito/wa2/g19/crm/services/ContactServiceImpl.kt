@@ -60,10 +60,16 @@ class ContactServiceImpl(
             name = createContactDTO.name,
             surname = createContactDTO.surname,
             ssn = createContactDTO.ssn,
+            region = createContactDTO.region,
             category = createContactDTO.category,
             emails = createContactDTO.emails.map { EmailDTO(email = it) }.toSet(),
             telephones = createContactDTO.telephones.map { TelephoneDTO(telephone = it) }.toSet(),
-            addresses = createContactDTO.addresses.map { AddressDTO(address = it) }.toSet()
+            addresses = createContactDTO.addresses.map { AddressDTO(
+                address = it.address,
+                zipCode = it.zipCode,
+                city = it.city,
+                country = it.country,
+                ) }.toSet()
         ).toEntity()
 
         contactRepository.save(newContact)
@@ -120,7 +126,7 @@ class ContactServiceImpl(
     override fun deleteEmail(contactId: Long, emailId: Long): ContactDTO {
         val contact = contactRepository.findById(contactId).orElseThrow { ContactNotFoundException("Contact not found!") }
         contact.emails.find { it.id == emailId } ?: throw EmailNotFoundException("Email not found!")
-        val filteredEmails = contact.emails.filter { it.id != emailId }.toSet()
+        val filteredEmails = contact.emails.filter { it.id != emailId }.toMutableSet()
         logger.info { "Deleting email with id: $emailId from contact: ${contact.id} ${contact.name} ${contact.surname}..." }
         contact.emails = filteredEmails
         emailRepository.deleteById(emailId)
@@ -165,21 +171,27 @@ class ContactServiceImpl(
     override fun deleteTelephone(contactId: Long, telephoneId: Long): ContactDTO {
         val contact = contactRepository.findById(contactId).orElseThrow { ContactNotFoundException("Contact not found!") }
         contact.telephones.firstOrNull { it.id == telephoneId } ?: throw TelephoneNotFoundException("Telephone number not found!")
-        contact.telephones = contact.telephones.filter { it.id != telephoneId }.toSet()
+        contact.telephones = contact.telephones.filter { it.id != telephoneId }.toMutableSet()
         logger.info { "Deleting telephone number with id: $telephoneId from contact: ${contact.id} ${contact.name} ${contact.surname}..." }
         telephoneRepository.deleteById(telephoneId)
         logger.info { "Telephone number deleted!" }
         return contact.toDTO()
     }
 
-    override fun addAddressToContact(contactId: Long, address: String): ContactDTO {
+    override fun addAddressToContact(contactId: Long, address: AddressDTO): ContactDTO {
         val contact = contactRepository.findById(contactId).orElseThrow{ ContactNotFoundException("Contact not found!") }
         val contactAddresses = contact.addresses.toMutableSet()
-        if(contactAddresses.any { it.address == address })
+        if(contactAddresses.any { it.id == address.id })
             throw DuplicatedDataException("Address already present!")
         logger.info { "Creating address ${address}..." }
-        contactAddresses.add(AddressDTO(address = address).toEntity(contact))
-        logger.info { "Saving $address to contact: ${contact.id} ${contact.name} ${contact.surname}..." }
+        contactAddresses.add(AddressDTO(
+            id = address.id,
+            address = address.address,
+            zipCode = address.zipCode,
+            city = address.city,
+            country = address.country
+            ).toEntity(contact))
+        logger.info { "Saving ${address.address} to contact: ${contact.id} ${contact.name} ${contact.surname}..." }
         contact.addresses = contactAddresses
         logger.info { "Address added to contact!" }
         return contact.toDTO()
@@ -201,7 +213,7 @@ class ContactServiceImpl(
     override fun deleteAddress(contactId: Long, addressId: Long): ContactDTO {
         val contact = contactRepository.findById(contactId).orElseThrow { ContactNotFoundException("Contact not found!") }
         contact.addresses.find { it.id == addressId } ?: throw AddressNotFoundException("Address not found!")
-        contact.addresses = contact.addresses.filter { it.id != addressId }.toSet()
+        contact.addresses = contact.addresses.filter { it.id != addressId }.toMutableSet()
         // No need of contactRepository.save(contact) because of "dirty checking" managing entities
         logger.info { "Deleting address with id: $addressId from contact: ${contact.id} ${contact.name} ${contact.surname}..." }
         addressRepository.deleteById(addressId)

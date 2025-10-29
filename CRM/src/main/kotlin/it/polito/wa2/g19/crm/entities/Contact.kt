@@ -11,19 +11,22 @@ class Contact (
     var name: String,
     var surname: String,
     var ssn: String? = null,
+    var region: Region,
     var category: Category = Category.UNKNOWN,
     @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
-    var emails: Set<Email> = emptySet(),
+    var emails: MutableSet<Email> = mutableSetOf(),
     @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
-    var addresses: Set<Address> = emptySet(),
+    var addresses: MutableSet<Address> = mutableSetOf(),
     @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
-    var telephones: Set<Telephone> = emptySet()
+    var telephones: MutableSet<Telephone> = mutableSetOf()
 ){
+
     fun toDTO() = ContactDTO(
         id = this.id,
         name = this.name,
         surname = this.surname,
         ssn = this.ssn,
+        region = this.region,
         category = this.category,
         emails = this.emails.map { it.toDTO() }.toSet(),
         addresses = this.addresses.map { it.toDTO() }.toSet(),
@@ -34,5 +37,13 @@ class Contact (
 enum class Category {
     CUSTOMER,
     PROFESSIONAL,
+    UNKNOWN
+}
+
+enum class Region {
+    EMEA,
+    NA,
+    LATAM,
+    APAC,
     UNKNOWN
 }

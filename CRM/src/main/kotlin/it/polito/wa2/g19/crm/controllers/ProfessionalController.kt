@@ -42,4 +42,10 @@ class ProfessionalController(private val professionalService: ProfessionalServic
         val professionalDTO = professionalService.updateProfessional(id, updateDTO)
         return ResponseEntity.ok(professionalDTO)
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteProfessional(@PathVariable id: Long) : ResponseEntity<Void> {
+        professionalService.deleteProfessional(id)
+        return ResponseEntity.noContent().build()
+    }
 }

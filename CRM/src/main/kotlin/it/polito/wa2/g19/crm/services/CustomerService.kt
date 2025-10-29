@@ -6,6 +6,7 @@ interface CustomerService {
     fun createCustomer(customerDTO: CustomerDTO): CustomerDTO
     fun getCustomers(): List<CustomerDTO>
     fun getCustomer(customerId: Long): CustomerDTO
+    fun deleteCustomer(customerId: Long)
     fun updateCustomerNotes(id: Long, notes: List<String>) : CustomerDTO
 
 

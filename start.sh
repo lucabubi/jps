@@ -6,7 +6,7 @@ PROJECT_ROOT=$(cd "$(dirname "$0")" && pwd)
 cd "$PROJECT_ROOT"
 
 # Optional: normalize ownership (uncomment if needed)
-# echo "Normalizzo ownership dei file (se necessario)..."
+# echo "[NORM] Normalizing file ownership..."
 # sudo chown -R "$(id -un)":"$(id -gn)" . || true
 
 GRADLE_BUILD() {
@@ -47,11 +47,11 @@ COMPOSE_ARGS=()
 for f in "${COMPOSE_FILES[@]}"; do
   COMPOSE_ARGS+=( -f "$f" )
   if [[ ! -f $f ]]; then
-    echo "[WARN] File compose mancante: $f" >&2
+    echo "[WARN] Compose file missing: $f" >&2
   fi
 done
 
-echo "[UP] Avvio stack Docker..."
+echo "[UP] Startup Docker stack..."
 docker compose -p jps "${COMPOSE_ARGS[@]}" up -d
 
-echo "[DONE] Build e avvio completati."
+echo "[DONE] Build and startup completed."
