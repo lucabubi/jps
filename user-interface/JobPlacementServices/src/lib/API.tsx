@@ -131,6 +131,30 @@ async function fetchProfessionals(pageIndex: number = 0, pageSize: number = 10):
     return { total, data };
 }
 
+async function fetchCustomers(pageIndex: number = 0, pageSize: number = 10): Promise<{ total: number; data: Customer[] }> {
+    let data: Customer[] = [];
+    let total = 0;
+
+    try {
+        toast.info("Fetching customers from CRM...");
+        const res = await fetch(`${gatewayBackendUrl}/API/customers/?page=${pageIndex}&size=${pageSize}`, { credentials: 'include' });
+
+        if (res.ok) {
+            const headerTotal = res.headers.get('X-Total-Count') ?? res.headers.get('x-total-count');
+            const parsedTotal = headerTotal ? parseInt(headerTotal, 10) : 0;
+            total = Number.isNaN(parsedTotal) ? 0 : parsedTotal;
+
+            data = await res.json();
+            toast.success("Customers retrieved successfully.");
+        } else {
+            toast.error("Error contacting CRM/Gateway server.");
+        }
+    } catch {
+        toast.error("Error contacting CRM/Gateway server.");
+    }
+
+    return { total, data };
+}
 
 async function deleteContactById(contactId: number): Promise<boolean> {
     let result = false;
@@ -227,4 +251,4 @@ async function fetchProfessional(id: number): Promise<Professional> {
 }
 
 
-export { fetchUser, fetchProfessionals, fetchMessages, fetchJobOffers, deleteContactById, fetchCustomer, fetchProfessional };
+export { fetchUser, fetchProfessionals, fetchCustomers, fetchMessages, fetchJobOffers, deleteContactById, fetchCustomer, fetchProfessional };

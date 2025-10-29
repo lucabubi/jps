@@ -85,7 +85,7 @@ export default function JobOffers() {
                 </div>
                 :
                 <div className="w-full">
-                    <DataTable variant="message" columns={createJobOffersColumns(() => setIsDirty(true))} data={jobOffers} pagination={pagination} setPagination={setPagination}/>
+                    <DataTable variant="job_offer" columns={createJobOffersColumns(() => setIsDirty(true))} data={jobOffers} pagination={pagination} setPagination={setPagination}/>
                 </div>
             }
         </>

@@ -103,7 +103,7 @@ if (-not $networkExists) {
 
 # Compose files (mirrors start.sh)
 $composeFiles = @(
-    'gatewayAPI/compose_mac.yaml',
+    'gatewayAPI/compose.yaml',
     'CRM/compose.yaml',
     'analytics_crm/compose.yaml',
     'communication_manager/compose.yaml',
@@ -124,7 +124,7 @@ foreach ($f in $composeFiles) {
 Write-Host "[UP] Avvio stack Docker..."
 
 $dockerCmd = 'docker'
-$dockerArgs = @('compose') + $composeArgs + @('up','-d')
+$dockerArgs = @('compose', '-p', 'jps') + $composeArgs + @('up','-d')
 Write-Host "[CMD] $dockerCmd $($dockerArgs -join ' ')"
 if ($DryRun) {
     Write-Host "[DRYRUN] Skipping docker compose up"

@@ -52,6 +52,6 @@ for f in "${COMPOSE_FILES[@]}"; do
 done
 
 echo "[UP] Avvio stack Docker..."
-docker compose "${COMPOSE_ARGS[@]}" up -d
+docker compose -p jps "${COMPOSE_ARGS[@]}" up -d
 
 echo "[DONE] Build e avvio completati."
