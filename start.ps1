@@ -24,4 +24,4 @@ docker build -t g19/user-interface .
 Set-Location -Path "../../"
 
 # Run docker-compose
-docker-compose -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up
+docker-compose -p jps -f gatewayAPI/compose.yaml -f CRM/compose.yaml -f communication_manager/compose.yaml -f user-interface/JobPlacementServices/compose.yaml up

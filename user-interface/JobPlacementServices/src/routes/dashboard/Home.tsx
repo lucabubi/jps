@@ -1,9 +1,8 @@
-import HomeWelcome from "@/components/dashboard/HomeWelcome";
+//import HomeWelcome from "@/components/dashboard/HomeWelcome";
+import FunFactsCard from "@/components/dashboard/FunFactsCard.tsx";
 
 export default function Home() {
     return (
-        <div className="h-full w-full flex justify-center">
-            <HomeWelcome />
-        </div>
+        <FunFactsCard />
     );
 }

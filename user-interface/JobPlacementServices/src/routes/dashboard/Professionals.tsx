@@ -70,7 +70,7 @@ export default function Professionals() {
 
     return (
         <>
-            <div className="w-full flex mt-2 items-center justify-between border-b">
+            <div className="w-full flex items-center justify-between border-b">
                 <h2 className="scroll-m-20 pb-2 text-3xl font-semibold tracking-tight first:mt-2">
                     Professionals
                 </h2>
