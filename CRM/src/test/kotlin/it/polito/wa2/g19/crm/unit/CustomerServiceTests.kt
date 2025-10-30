@@ -6,19 +6,19 @@ import it.polito.wa2.g19.crm.entities.*
 import it.polito.wa2.g19.crm.exceptions.*
 import it.polito.wa2.g19.crm.repositories.*
 import it.polito.wa2.g19.crm.services.CustomerServiceImpl
-import it.polito.wa2.g19.crm.kafka.CustomerEventsProducer
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
 import java.util.*
 
 class CustomerServiceTests {
     private val customerRepository: CustomerRepository = mockk()
-    private val customerEventsProducer: CustomerEventsProducer = mockk(relaxed = true)
+    private val noteRepository: NoteRepository = mockk()
     private val customerService =
         CustomerServiceImpl(
             customerRepository,
-            customerEventsProducer
+            noteRepository
         )
 
 
@@ -32,12 +32,18 @@ class CustomerServiceTests {
                 category= Category.CUSTOMER,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         val customerSlot = slot<Customer>()
         every { customerRepository.save(capture(customerSlot)) } answers { customerSlot.captured }
+        every { noteRepository.save(any()) } answers { firstArg() }  // Add this line
+
 
         // Act
         val result = customerService.createCustomer(customerDTO)
@@ -46,7 +52,7 @@ class CustomerServiceTests {
         verify { customerRepository.save(any()) }
         assertEquals(customerDTO, result)
         assertEquals(customerDTO.contact, customerSlot.captured.contact.toDTO())
-        assertEquals(customerDTO.notes, customerSlot.captured.notes)
+        assertEquals(customerDTO.notes, customerSlot.captured.notes.map { it.toDTO() })
         assertEquals(customerDTO.jobOffers, customerSlot.captured.jobOffers.map { it.toDTO() }.toSet())
     }
 
@@ -59,22 +65,30 @@ class CustomerServiceTests {
                 name= "John",
                 surname= "Doe",
                 category= Category.CUSTOMER,
-                emails= emptySet(),
-                addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+                emails= mutableSetOf(),
+                addresses= mutableSetOf(),
+                telephones= mutableSetOf(),
+                region = Region.NA),
+            notes = mutableSetOf(
+                Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
         val customer2 = Customer(
             contact = Contact(
                 name= "Jane",
                 surname= "Doe",
                 category= Category.CUSTOMER,
-                emails= emptySet(),
-                addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 2", "Note 3"),
-            jobOffers = emptySet()
+                emails= mutableSetOf(),
+                addresses= mutableSetOf(),
+                telephones= mutableSetOf(),
+                region = Region.NA),
+            notes = mutableSetOf(
+                Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
         val customers = listOf(customer1, customer2)
         every { customerRepository.findAll() } returns customers
@@ -97,11 +111,15 @@ class CustomerServiceTests {
                 name= "John",
                 surname= "Doe",
                 category= Category.CUSTOMER,
-                emails= emptySet(),
-                addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+                emails= mutableSetOf(),
+                addresses= mutableSetOf(),
+                telephones= mutableSetOf(),
+                region = Region.NA),
+            notes = mutableSetOf(
+                Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
         every { customerRepository.findById(id) } returns Optional.of(customer)
 
@@ -129,7 +147,10 @@ class CustomerServiceTests {
     fun whenUpdateCustomerNotes_thenReturnCustomerDTO() {
         //mock data
         val customerId = 1L
-        val updatedNotes = listOf("Note 1", "Note 2", "Note 3")
+        val updatedNotes = listOf(
+            NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+        )
         val contactDTO = ContactDTO(
             id = 1L,
             name = "John",
@@ -137,17 +158,23 @@ class CustomerServiceTests {
             category = Category.CUSTOMER,
             emails = emptySet(),
             addresses = emptySet(),
-            telephones = emptySet()
+            telephones = emptySet(),
+            region = Region.NA
         )
         val customerDTO = CustomerDTO(
             id = customerId,
             contact = contactDTO,
-            notes = listOf("Note 1", "Note 2"),
+            notes = listOf(
+                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         //given
         every { customerRepository.findById(customerId) } returns Optional.of(customerDTO.toEntity())
         every { customerRepository.save(any()) } answers { firstArg() }
+        every { noteRepository.save(any()) } answers { firstArg() }  // Add this line
+
         //when
         val result = customerService.updateCustomerNotes(customerId, updatedNotes)
         //then
@@ -160,7 +187,9 @@ class CustomerServiceTests {
     fun whenUpdateCustomerNotes_thenThrowCustomerNotFoundException() {
         //mock data
         val customerId = 1L
-        val updatedNotes = listOf("Note 1", "Note 2", "Note 3")
+        val updatedNotes = listOf(NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 11L, title = "Note 3", description = "Description 3", createdAt = LocalDateTime.now()))
         //given
         every { customerRepository.findById(customerId) } returns Optional.empty()
         //when

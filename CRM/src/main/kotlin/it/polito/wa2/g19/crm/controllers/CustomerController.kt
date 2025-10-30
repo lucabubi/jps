@@ -1,6 +1,7 @@
 package it.polito.wa2.g19.crm.controllers
 
 import it.polito.wa2.g19.crm.dtos.CustomerDTO
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.services.CustomerService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -27,7 +28,7 @@ class CustomerController(private val customerService: CustomerService) {
     }
 
     @PutMapping("/{id}/notes")
-    fun updateCustomerNotes(@PathVariable id: Long, @RequestBody notes: List<String>) : ResponseEntity<CustomerDTO> {
+    fun updateCustomerNotes(@PathVariable id: Long, @RequestBody notes: List<NoteDTO>) : ResponseEntity<CustomerDTO> {
         val customerDTO = customerService.updateCustomerNotes(id, notes)
         return ResponseEntity.ok(customerDTO)
     }

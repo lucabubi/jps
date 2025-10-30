@@ -2,6 +2,7 @@ package it.polito.wa2.g19.crm.entities
 
 import it.polito.wa2.g19.crm.dtos.CustomerMinimalDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
+import it.polito.wa2.g19.crm.dtos.toDTO
 import jakarta.persistence.*
 
 // Global fixed value for profit margin
@@ -16,9 +17,8 @@ class JobOffer(
     var description: String = "",
     var status: Status = Status.CREATED,
     var duration: Int = 0,
-    @ElementCollection
-    @Column(length = 1000)
-    var notes: List<String> = emptyList(),
+    @OneToMany(mappedBy = "jobOffer", cascade = [(CascadeType.ALL)])
+    var notes: MutableSet<Note> = mutableSetOf(),
     @ElementCollection
     var requiredSkills: Set<String> = emptySet(),
     @ManyToOne(cascade = [CascadeType.ALL])
@@ -36,12 +36,12 @@ class JobOffer(
             description = this.description,
             status = this.status,
             duration = this.duration,
-            notes = this.notes,
+            notes = this.notes.map { it.toDTO() },
             requiredSkills = this.requiredSkills,
             customer = CustomerMinimalDTO(
                 id = this.customer.id,
                 contact = this.customer.contact.toDTO(),
-                notes = this.customer.notes
+                notes = this.customer.notes.map { it.toDTO() },
             ),
             professional = this.professional?.toDTO(),
             value = this.value

@@ -3,21 +3,33 @@ import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.mockk.verify
+import it.polito.wa2.g19.crm.controllers.CustomerController
 import it.polito.wa2.g19.crm.dtos.*
 import it.polito.wa2.g19.crm.entities.*
 import it.polito.wa2.g19.crm.exceptions.*
 import it.polito.wa2.g19.crm.services.CustomerService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
-
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.http.MediaType
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.time.LocalDateTime
 
-@WebMvcTest
-class CustomerControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Autowired val objectMapper: ObjectMapper) {
+@WebMvcTest(
+    controllers = [CustomerController::class],
+    excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [EnableWebSecurity::class])]
+)
+@AutoConfigureMockMvc(addFilters = false)
+class CustomerControllerTests(
+    @param:Autowired val mockMvc: MockMvc,
+    @param:Autowired val objectMapper: ObjectMapper
+) {
 
     @MockkBean
     lateinit var customerService: CustomerService
@@ -32,8 +44,12 @@ class CustomerControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Auto
                 category= Category.CUSTOMER,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         every { customerService.createCustomer(customerDTO) } returns customerDTO
@@ -58,8 +74,12 @@ class CustomerControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Auto
                 category= Category.CUSTOMER,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         val customerDTO2 = CustomerDTO(
@@ -69,8 +89,12 @@ class CustomerControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Auto
                 category= Category.CUSTOMER,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 3", "Note 4"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 3L, title = "Note 3", description = "Description 3", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 4L, title = "Note 4", description = "Description 4", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         val customers = listOf(customerDTO1, customerDTO2)
@@ -95,8 +119,12 @@ class CustomerControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Auto
                 category= Category.CUSTOMER,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             jobOffers = emptySet()
         )
         every { customerService.getCustomer(id) } returns customerDTO

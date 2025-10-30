@@ -6,6 +6,7 @@ import it.polito.wa2.g19.crm.entities.JobOffer
 import it.polito.wa2.g19.crm.entities.Professional
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotAvailableException
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotFoundException
+import it.polito.wa2.g19.crm.repositories.NoteRepository
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -17,6 +18,7 @@ import mu.KotlinLogging
 @Transactional
 class ProfessionalServiceImpl(
     private val professionalRepository: ProfessionalRepository,
+    private val noteRepository: NoteRepository
 ) : ProfessionalService {
     private val logger = KotlinLogging.logger {}
 
@@ -24,15 +26,15 @@ class ProfessionalServiceImpl(
         // Convert DTO to entity
         val professional = Professional(
             contact = professionalDTO.contact.toEntity(),
-            notes = professionalDTO.notes,
+            notes = professionalDTO.notes.map { it.toEntity() }.toMutableSet(),
             skills = professionalDTO.skills,
             dailyRate = professionalDTO.dailyRate,
             employmentState = professionalDTO.employmentState,
-            location = professionalDTO.location
         )
         logger.info("Creating professional: $professional")
         // Save to database
         val savedProfessional = professionalRepository.save(professional)
+        professional.notes.map{ noteRepository.save(it) }
         logger.info("Professional saved: $savedProfessional")
         val savedProfessionalDTO = savedProfessional.toDTO()
         // Return
@@ -51,9 +53,6 @@ class ProfessionalServiceImpl(
         logger.info { "Applying filters..." }
         if (employmentState.isPresent) {
             professionals = professionals.filter { it.employmentState == employmentState.get() }
-        }
-        if (location.isPresent) {
-            professionals = professionals.filter { it.location == location.get() }
         }
         if (skills.isPresent) {
             professionals = professionals.filter { it.skills.containsAll(skills.get()) }
@@ -79,13 +78,13 @@ class ProfessionalServiceImpl(
         if(activeJobOffer.isNotEmpty() && updateDTO.employmentState.isPresent)
             throw ProfessionalNotAvailableException("Professional with id $id is currently working")
         logger.info { "Updating professional id:$id..." }
-        updateDTO.notes.ifPresent { professional.notes = it }
+        updateDTO.notes.ifPresent { professional.notes = it.map { noteDTO -> noteDTO.toEntity() }.toMutableSet() }
         updateDTO.skills.ifPresent { professional.skills = it }
         updateDTO.dailyRate.ifPresent { professional.dailyRate = it }
         updateDTO.employmentState.ifPresent { professional.employmentState = it }
-        updateDTO.location.ifPresent { professional.location = it }
         // .save added for good practice, even if not needed because of "dirty checking" performed by Spring Data JPA
         professionalRepository.save(professional)
+        updateDTO.notes.ifPresent { it -> it.map { noteDTO -> noteDTO.toEntity() }.forEach { noteRepository.save(it) } }
         logger.info { "Professional id:$id updated" }
         return professional.toDTO()
     }

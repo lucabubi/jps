@@ -3,24 +3,37 @@ package it.polito.wa2.g19.crm.unit
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import it.polito.wa2.g19.crm.controllers.JobOfferController
 import it.polito.wa2.g19.crm.dtos.*
 import it.polito.wa2.g19.crm.entities.*
 import it.polito.wa2.g19.crm.exceptions.CustomerNotFoundException
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotFoundException
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.data.domain.PageRequest
 import it.polito.wa2.g19.crm.services.JobOfferService
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 import java.util.*
 
-@WebMvcTest
-class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autowired val objectMapper: ObjectMapper) {
+@WebMvcTest(
+    controllers = [JobOfferController::class],
+    excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [EnableWebSecurity::class])]
+)
+@AutoConfigureMockMvc(addFilters = false)
+class JobOfferControllerTest(
+    @param:Autowired val mockMvc: MockMvc,
+    @param:Autowired val objectMapper: ObjectMapper
+) {
     @MockkBean
     lateinit var jobOfferService: JobOfferService
 
@@ -36,25 +49,32 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
             JobOfferDTO(
                 1L,
                 "First job offer",
+                "Description of the first job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("good", "fine"),
-                setOf("smart", "group work"),
+                listOf(
+                    NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),                setOf("smart", "group work"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
                 )
             ),
             JobOfferDTO(
                 2L,
                 "First job offer",
+                "Description of the first job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("nice", "call again"),
+                listOf(
+                    NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
                 )
             )
         )
@@ -84,30 +104,42 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.CUSTOMER,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+            mutableSetOf(
+                Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
 
-        val jobOffersSet = setOf(
+        val jobOffersSet = mutableSetOf(
             JobOffer(
                 id = 1L,
                 description = "First job offer",
+                title = "First job offer",
                 status = JobOffer.Status.CREATED,
                 value = 2.0F,
-                notes = listOf("good", "fine"),
+                notes = mutableSetOf(
+                    Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 requiredSkills = setOf("smart", "group work"),
                 customer = customer
             ),
             JobOffer(
                 id = 2L,
+                title = "Second job offer",
                 description = "First job offer",
                 status = JobOffer.Status.CREATED,
                 value = 2.0F,
-                notes = listOf("nice", "call again"),
+                notes = mutableSetOf(
+                    Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 requiredSkills = setOf("smart", "group work", "organised"),
                 customer = customer
             )
@@ -153,21 +185,29 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.PROFESSIONAL,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+            notes = mutableSetOf(
+                Note(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
 
-        val jobOffersSet = setOf(
+        val jobOffersSet = mutableSetOf(
             JobOffer(
                 id = 1L,
+                title = "First job offer",
                 description = "First job offer",
                 status = JobOffer.Status.CONSOLIDATED,
                 value = 2.0F,
-                notes = listOf("good", "fine"),
+                notes = mutableSetOf(
+                    Note(id = 11L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 12L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 requiredSkills = setOf("smart", "group work"),
                 customer = Customer(
                     id = 1L,
@@ -176,20 +216,28 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                         name = "John",
                         surname = "Doe",
                         category = Category.CUSTOMER,
-                        emails = emptySet(),
-                        addresses = emptySet(),
-                        telephones = emptySet()
+                        emails = mutableSetOf(),
+                        addresses = mutableSetOf(),
+                        telephones = mutableSetOf(),
+                        region = Region.NA
                     ),
-                    notes = listOf("Note 1", "Note 2"),
-                    jobOffers = emptySet()
+                    notes = mutableSetOf(
+                        Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                        Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    ),
+                    jobOffers = mutableSetOf()
                 )
             ),
             JobOffer(
                 id = 2L,
+                title = "Second job offer",
                 description = "First job offer",
                 status = JobOffer.Status.DONE,
                 value = 2.0F,
-                notes = listOf("nice", "call again"),
+                notes = mutableSetOf(
+                    Note(id = 15L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 16L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 requiredSkills = setOf("smart", "group work", "organised"),
                 customer = Customer(
                     id = 2L,
@@ -198,12 +246,16 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                         name = "Jane",
                         surname = "Doe",
                         category = Category.CUSTOMER,
-                        emails = emptySet(),
-                        addresses = emptySet(),
-                        telephones = emptySet()
+                        emails = mutableSetOf(),
+                        addresses = mutableSetOf(),
+                        telephones = mutableSetOf(),
+                        region = Region.NA
                     ),
-                    notes = listOf("Note 1", "Note 2"),
-                    jobOffers = emptySet()
+                    notes = mutableSetOf(
+                        Note(id = 17L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                        Note(id = 18L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    ),
+                    jobOffers = mutableSetOf()
 
                 ),
                 professional = professional
@@ -244,26 +296,34 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
         val jobOffers = listOf(
             JobOfferDTO(
                 1L,
+                "JobOffer: ",
                 "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                listOf(
+                    NoteDTO(id = 19L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 20L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                 )
             ),
             JobOfferDTO(
                 2L,
+                "JobOffer: ",
                 "Second job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
+                listOf(
+                    NoteDTO(id = 21L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 22L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                 )
             )
         )
@@ -291,37 +351,49 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.CUSTOMER,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+            notes = mutableSetOf(
+                Note(id = 23L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 24L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
 
         val jobOffers = listOf(
             JobOfferDTO(
                 1L,
+                "JobOffer: ",
                 "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                listOf(
+                    NoteDTO(id = 25L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 26L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                 )
             ),
             JobOfferDTO(
                 2L,
+                "JobOffer: ",
                 "Second job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
+                listOf(
+                    NoteDTO(id = 27L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 28L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 CustomerMinimalDTO(
                     id = 2L,
-                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe")
+                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe", region = Region.NA),
                 )
             )
         )
@@ -366,51 +438,61 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.PROFESSIONAL,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
+            notes = mutableSetOf(
+                Note(id = 29L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 30L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
-            location = "Turin"
         )
 
         val jobOffers = listOf(
             JobOfferDTO(
                 1L,
+                "JobOffer: ",
                 "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                listOf(
+                    NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                 ),
                 professional.toDTO()
             ),
             JobOfferDTO(
                 2L,
+                "JobOffer: ",
                 "Second job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
-                setOf("smart", "group work", "organised"),
+                listOf(
+                    NoteDTO(id = 31L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 32L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),                setOf("smart", "group work", "organised"),
                 CustomerMinimalDTO(
                     id = 2L,
-                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe")
+                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe", region = Region.NA),
                 ),
                 ProfessionalDTO(
                     id = 2L,
-                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe")
+                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe", region = Region.NA)
 
                 )
             )
         )
 
-        professional.jobOffers = setOf(jobOffers[0].toEntity())
+        professional.jobOffers = mutableSetOf(jobOffers[0].toEntity())
 
         every { jobOfferService.getAbortedJobOffers(pageable, null, professional.id) } returns jobOffers.filter { it.professional?.id == professional.id }
 
@@ -452,12 +534,16 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.CUSTOMER,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
-            jobOffers = emptySet()
+            notes = mutableSetOf(
+                Note(id = 33L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 34L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
+            jobOffers = mutableSetOf()
         )
         val professional = Professional(
             id = 1L,
@@ -466,52 +552,61 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                 name = "John",
                 surname = "Doe",
                 category = Category.PROFESSIONAL,
-                emails = emptySet(),
-                addresses = emptySet(),
-                telephones = emptySet()
+                emails = mutableSetOf(),
+                addresses = mutableSetOf(),
+                telephones = mutableSetOf(),
+                region = Region.NA
             ),
-            notes = listOf("Note 1", "Note 2"),
+            notes = mutableSetOf(
+                Note(id = 35L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 36L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
-            location = "Turin"
         )
 
         val jobOffers = listOf(
             JobOfferDTO(
                 1L,
+                "JobOffer: ",
                 "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
-                setOf("smart", "group work"),
+                listOf(
+                    NoteDTO(id = 37L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 38L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),                setOf("smart", "group work"),
                 CustomerMinimalDTO(
                     id = 1L,
-                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                    contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                 ),
                 professional.toDTO()
             ),
             JobOfferDTO(
                 2L,
+                "JobOffer: ",
                 "Second job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
-                setOf("smart", "group work", "organised"),
+                listOf(
+                    NoteDTO(id = 39L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 40L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),                setOf("smart", "group work", "organised"),
                 CustomerMinimalDTO(
                     id = 2L,
-                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe")
+                    contact = ContactDTO(id = 2L, name = "Jane", surname = "Doe", region = Region.NA),
                 ),
                 ProfessionalDTO(
                     id = 2L,
-                    contact = ContactDTO(id = 3L, name = "Jane", surname = "Doe")
+                    contact = ContactDTO(id = 3L, name = "Jane", surname = "Doe", region = Region.NA)
 
                 )
             )
         )
 
-        professional.jobOffers = setOf(jobOffers[0].toEntity())
-        customer.jobOffers = setOf(jobOffers[0].toEntity())
+        professional.jobOffers = mutableSetOf(jobOffers[0].toEntity())
+        customer.jobOffers = mutableSetOf(jobOffers[0].toEntity())
 
         every { jobOfferService.getAbortedJobOffers(pageable, customer.id, professional.id) } returns jobOffers.filter { it.professional?.id == professional.id && it.customer.id == customer.id }
 
@@ -532,26 +627,33 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
     @Test
     fun testChangeJobOfferStatus() {
         val joboffersId = 1L
+        val date = LocalDateTime.now()
         val jobOfferUpdateDTO = JobOfferUpdateDTO(
             status = "SELECTION_PHASE",
-            notes = Optional.of(listOf("good job")),
+            notes = Optional.of(listOf(
+                NoteDTO(id = 41L, title = "Note 1", description = "Description 1", createdAt = date),
+                NoteDTO(id = 42L, title = "Note 2", description = "Description 2", createdAt = date)
+            )),
             professionalId = Optional.of(1L)
         )
 
         every { jobOfferService.updateJobOffer(any(), any()) } returns JobOfferDTO(
             1L,
+            "JobOffer: ",
             "First job offer",
             JobOffer.Status.SELECTION_PHASE,
             2,
-            listOf("good job"),
+            listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = date),
+            ),
             setOf("smart", "group work"),
             CustomerMinimalDTO(
                 id = 1L,
-                contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
             ),
             ProfessionalDTO(
                 id = 1L,
-                contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
             )
         )
 
@@ -566,18 +668,21 @@ class JobOfferControllerTest(@param:Autowired val mockMvc: MockMvc, @param:Autow
                     objectMapper.writeValueAsString(
                         JobOfferDTO(
                             1L,
+                            "JobOffer: ",
                             "First job offer",
                             JobOffer.Status.SELECTION_PHASE,
                             2,
-                            listOf("good job"),
+                            listOf(
+                                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = date),
+                            ),
                             setOf("smart", "group work"),
                             CustomerMinimalDTO(
                                 id = 1L,
-                                contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                                contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
                             ),
                             ProfessionalDTO(
                                 id = 1L,
-                                contact = ContactDTO(id = 1L, name = "John", surname = "Doe")
+                                contact = ContactDTO(id = 1L, name = "John", surname = "Doe", region = Region.NA)
                             )
                         )
                     )

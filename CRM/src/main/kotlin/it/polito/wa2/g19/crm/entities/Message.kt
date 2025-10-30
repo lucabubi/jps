@@ -56,6 +56,4 @@ class History(
     var comment: String?,
     @ManyToOne
     var message: Message
-) {
-
-}
+)

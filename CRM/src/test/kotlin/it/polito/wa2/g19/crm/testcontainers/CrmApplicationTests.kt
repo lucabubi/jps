@@ -2,6 +2,7 @@ package it.polito.wa2.g19.crm.testcontainers
 
 import it.polito.wa2.g19.crm.dtos.*
 import it.polito.wa2.g19.crm.entities.Category
+import it.polito.wa2.g19.crm.entities.Region
 import it.polito.wa2.g19.crm.exceptions.*
 import it.polito.wa2.g19.crm.repositories.*
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -18,6 +19,7 @@ import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.time.LocalDateTime
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -61,8 +63,12 @@ class CrmApplicationTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
+            region = Region.NA,
         ),
-        notes = listOf("Note 1", "Note 2"),
+        notes = listOf(
+            NoteDTO(id = 10L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 11L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+        ),
         jobOffers = emptySet()
     )
     private val customerDTO2 = CustomerDTO(
@@ -73,8 +79,12 @@ class CrmApplicationTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
+            region = Region.NA,
         ),
-        notes = listOf("Note", "Additional note"),
+        notes = listOf(
+            NoteDTO(id = 1, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 2, title = "Additional note", description = "Description 2", createdAt = LocalDateTime.now())
+        ),
         jobOffers = emptySet()
     )
     private val professionalDTO1 = ProfessionalDTO(
@@ -85,8 +95,12 @@ class CrmApplicationTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
+            region = Region.NA,
         ),
-        notes = listOf("Note 1", "Note 2"),
+        notes = listOf(
+            NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+        ),
         skills = setOf("Skill 1", "Skill 2"),
         location = "Milan"
     )
@@ -98,18 +112,26 @@ class CrmApplicationTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
+            region = Region.NA,
         ),
-        notes = listOf("Note 1", "Note 2"),
+        notes = listOf(
+            NoteDTO(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+        ),
         skills = setOf("Skill", "Another skill"),
         location = "Turin"
     )
 
     private val createJobOfferDTO = CreateJobOfferDTO(
         description = "Description 1",
-        notes = listOf("Note 1", "Note 2"),
+        notes = listOf(
+            NoteDTO(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+            NoteDTO(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+        ),
         customerId = 1L
     )
     private val jobOfferDTO = JobOfferDTO(
+        title = "Job Offer",
         description = createJobOfferDTO.description,
         duration = createJobOfferDTO.duration,
         notes = createJobOfferDTO.notes,

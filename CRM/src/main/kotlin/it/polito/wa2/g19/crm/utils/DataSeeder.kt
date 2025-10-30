@@ -78,37 +78,44 @@ class DataSeeder(
         // ## 3. CUSTOMER
         // ##################################################
         val cust1 = Customer(contact = savedC1)
-        cust1.notes = mutableListOf("Old customer", "Prefers to be contacted via email.")
-
+        cust1.notes = mutableSetOf(
+            Note(title = "Old customer", description = "", createdAt = LocalDateTime.now(), customer = cust1),
+            Note(title = "Prefers to be contacted via email", description = "", createdAt = LocalDateTime.now(), customer = cust1)
+        )
         val cust2 = Customer(contact = savedC2)
-        cust2.notes = mutableListOf("New customer, interested in web development services.")
-
+        cust2.notes = mutableSetOf(
+            Note(title = "Customer Info", description = "New customer, interested in web development services.", createdAt = LocalDateTime.now(), customer = cust2)
+        )
         val cust3 = Customer(contact = savedC5)
-        cust3.notes = mutableListOf("Innovative Startup, IoT Industry")
+        cust3.notes = mutableSetOf(
+            Note(title = "Company Info", description = "Innovative Startup, IoT Industry", createdAt = LocalDateTime.now(), customer = cust3)
+        )
 
         val (savedCust1, savedCust2, savedCust3) =
             customerRepository.saveAll(listOf(cust1, cust2, cust3))
 
         // ##################################################
-        // ## 4. PROFESSIONISTI (PROFESSIONAL)
+        // ## 4. PROFESSIONALS
         // ##################################################
         val prof1 = Professional(
             dailyRate = 300.0F,
             employmentState = Professional.State.AVAILABLE_FOR_WORK, // 1
-            location = "Milano",
             contact = savedC3
         )
         prof1.skills = mutableSetOf("Kotlin", "Spring Boot", "JPA/Hibernate", "PostgreSQL")
-        prof1.notes = mutableListOf("Senior developer, 10+ years experience")
-
+        prof1.notes = mutableSetOf(
+            Note(title = "Experience", description = "Senior developer, 10+ years experience", createdAt = LocalDateTime.now(), professional = prof1)
+        )
         val prof2 = Professional(
             dailyRate = 120.0F,
             employmentState = Professional.State.EMPLOYED, // 0
-            location = "Torino",
             contact = savedC4
         )
         prof2.skills = mutableSetOf("React", "TypeScript", "Node.js", "UX/UI Design")
-        prof2.notes = mutableListOf("Front-end specialist", "Actually employed, considers offers")
+        prof2.notes = mutableSetOf(
+            Note(title = "Specialization", description = "Front-end specialist", createdAt = LocalDateTime.now(), professional = prof2),
+            Note(title = "Employment Status", description = "Actually employed, considers offers", createdAt = LocalDateTime.now(), professional = prof2)
+        )
 
         val (savedProf1, savedProf2) =
             professionalRepository.saveAll(listOf(prof1, prof2))
@@ -124,7 +131,9 @@ class DataSeeder(
             customer = savedCust1,
             professional = null
         )
-        jo1.notes = mutableListOf("URGENT")
+        jo1.notes = mutableSetOf(
+            Note(title = "Priority", description = "URGENT", createdAt = LocalDateTime.now(), jobOffer = jo1)
+        )
         jo1.requiredSkills = mutableSetOf("Java", "Spring Boot")
 
         val jo2 = JobOffer(
@@ -157,7 +166,10 @@ class DataSeeder(
             customer = savedCust3,
             professional = null
         )
-        jo4.notes = mutableListOf("Long-term project", "Looking for Kotlin expert")
+        jo4.notes = mutableSetOf(
+            Note(title = "Project Duration", description = "Long-term project", createdAt = LocalDateTime.now(), jobOffer = jo4),
+            Note(title = "Skill Requirement", description = "Looking for Kotlin expert", createdAt = LocalDateTime.now(), jobOffer = jo4)
+        )
         jo4.requiredSkills = mutableSetOf("Kotlin", "Android SDK")
 
         val jo5 = JobOffer(
@@ -168,13 +180,15 @@ class DataSeeder(
             customer = savedCust2,
             professional = null
         )
-        jo5.notes = mutableListOf("Budget constraints")
+        jo5.notes = mutableSetOf(
+            Note(title = "Budget", description = "Budget constraints", createdAt = LocalDateTime.now(), jobOffer = jo5)
+        )
         jo5.requiredSkills = mutableSetOf("Security")
 
         jobOfferRepository.saveAll(listOf(jo1, jo2, jo3, jo4, jo5))
 
         // ##################################################
-        // ## 6. MESSAGGI E STORICO (MESSAGE)
+        // ## 6. MESSAGES AND MESSAGE HISTORY
         // ##################################################
         val msg1 = Message(
             sender = "mario.rossi@example.com",

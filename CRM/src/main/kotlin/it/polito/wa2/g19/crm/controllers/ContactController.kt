@@ -3,6 +3,7 @@ package it.polito.wa2.g19.crm.controllers
 import it.polito.wa2.g19.crm.dtos.ContactDTO
 import it.polito.wa2.g19.crm.dtos.CreateContactDTO
 import it.polito.wa2.g19.crm.dtos.UpdateContactDTO
+import it.polito.wa2.g19.crm.dtos.AddressDTO
 import it.polito.wa2.g19.crm.entities.Category
 import it.polito.wa2.g19.crm.exceptions.InvalidDataException
 import it.polito.wa2.g19.crm.services.ContactService
@@ -57,8 +58,6 @@ class ContactController(private val contactService: ContactService) {
             throw InvalidDataException("Invalid email address!")
         if (!createContactDTO.telephones.all { phonePattern.matches(it) })
             throw InvalidDataException("Invalid telephone number!")
-        if (!createContactDTO.addresses.all { addressPattern.matches(it) })
-            throw InvalidDataException("Invalid address format!")
 
         val contactDTO = contactService.createContact(createContactDTO)
         return ResponseEntity.ok(contactDTO)
@@ -123,9 +122,7 @@ class ContactController(private val contactService: ContactService) {
     }
 
     @PostMapping("{contactId}/address")
-    fun addAddressToContact(@PathVariable contactId: Long, @RequestBody address: String) : ResponseEntity<ContactDTO> {
-        if (!addressPattern.matches(address))
-            throw InvalidDataException("Invalid address format")
+    fun addAddressToContact(@PathVariable contactId: Long, @RequestBody address: AddressDTO) : ResponseEntity<ContactDTO> {
         val contactDTO = contactService.addAddressToContact(contactId, address)
         return ResponseEntity.ok(contactDTO)
     }

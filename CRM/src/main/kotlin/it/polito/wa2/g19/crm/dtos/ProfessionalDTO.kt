@@ -6,7 +6,7 @@ import it.polito.wa2.g19.crm.entities.Professional.State
 data class ProfessionalDTO(
     val id : Long = 0,
     val contact: ContactDTO,
-    val notes: List<String> = emptyList(),
+    val notes: List<NoteDTO> = emptyList(),
     val skills: Set<String> = emptySet(),
     var dailyRate: Float = 0.0f,
     var employmentState: State = State.AVAILABLE_FOR_WORK,
@@ -16,11 +16,11 @@ data class ProfessionalDTO(
         return Professional(
             id = this.id,
             contact = this.contact.toEntity(),
-            notes = this.notes,
+            notes = this.notes.map { it.toEntity() }.toMutableSet(),
             skills = this.skills,
             dailyRate = this.dailyRate,
             employmentState = this.employmentState,
-            location = this.location
         )
     }
 }
+

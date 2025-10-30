@@ -4,5 +4,5 @@ import java.util.*
 
 data class JobOfferUpdateDTO (
     val status: String,
-    val notes: Optional<List<String>> = Optional.empty(),
+    val notes: Optional<List<NoteDTO>> = Optional.empty(),
     val professionalId: Optional<Long> = Optional.empty())

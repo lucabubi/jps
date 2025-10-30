@@ -4,23 +4,35 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import io.mockk.verify
+import it.polito.wa2.g19.crm.controllers.ProfessionalController
 import it.polito.wa2.g19.crm.dtos.ContactDTO
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalDTO
 import it.polito.wa2.g19.crm.entities.Category
 import it.polito.wa2.g19.crm.entities.Professional
+import it.polito.wa2.g19.crm.entities.Region
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotFoundException
 import it.polito.wa2.g19.crm.services.ProfessionalService
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.springframework.context.annotation.ComponentScan
+import org.springframework.context.annotation.FilterType
 import org.springframework.http.MediaType
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import java.time.LocalDateTime
 
-@WebMvcTest
+@WebMvcTest(
+    controllers = [ProfessionalController::class],
+    excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [EnableWebSecurity::class])]
+)
+@AutoConfigureMockMvc(addFilters = false)
 class ProfessionalControllerTests(@param:Autowired val mockMvc: MockMvc, @param:Autowired val objectMapper: ObjectMapper) {
     @MockkBean
     lateinit var professionalService: ProfessionalService
@@ -35,8 +47,12 @@ class ProfessionalControllerTests(@param:Autowired val mockMvc: MockMvc, @param:
                 category= Category.PROFESSIONAL,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA,),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
@@ -66,8 +82,12 @@ class ProfessionalControllerTests(@param:Autowired val mockMvc: MockMvc, @param:
                 category= Category.PROFESSIONAL,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA,),
+            notes = listOf(
+                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,

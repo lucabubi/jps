@@ -4,34 +4,38 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import it.polito.wa2.g19.crm.dtos.JobOfferUpdateDTO
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.entities.Contact
 import it.polito.wa2.g19.crm.entities.Customer
 import it.polito.wa2.g19.crm.entities.JobOffer
 import it.polito.wa2.g19.crm.entities.Professional
+import it.polito.wa2.g19.crm.entities.Note
+import it.polito.wa2.g19.crm.entities.Region
 import it.polito.wa2.g19.crm.exceptions.*
 import it.polito.wa2.g19.crm.services.JobOfferServiceImpl
 import it.polito.wa2.g19.crm.repositories.CustomerRepository
 import it.polito.wa2.g19.crm.repositories.JobOfferRepository
+import it.polito.wa2.g19.crm.repositories.NoteRepository
 import it.polito.wa2.g19.crm.repositories.ProfessionalRepository
-import it.polito.wa2.g19.crm.kafka.JobOfferEventsProducer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import java.time.LocalDateTime
 import java.util.*
 
 class JobOfferServiceTests {
     private val jobOfferRepository: JobOfferRepository = mockk()
     private val customerRepository: CustomerRepository = mockk()
     private val professionalRepository: ProfessionalRepository = mockk()
-    private val jobOfferEventsProducer: JobOfferEventsProducer = mockk()
+    private val noteRepository: NoteRepository = mockk()
     private val jobOfferService =
         JobOfferServiceImpl(
             jobOfferRepository,
             customerRepository,
             professionalRepository,
-            jobOfferEventsProducer
+            noteRepository
         )
 
     @Test
@@ -40,26 +44,34 @@ class JobOfferServiceTests {
         val jobOffersList = listOf(
             JobOffer(
                 1L,
+                "Important job offer",
                 "First job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             ),
             JobOffer(
                 2L,
+                "Another job offer",
                 "First job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("nice", "call again"),
-                setOf("smart", "group work", "organised"),
+                mutableSetOf(
+                    Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
+                mutableSetOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             )
         )
@@ -79,25 +91,33 @@ class JobOfferServiceTests {
             JobOffer(
                 1L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             ),
             JobOffer(
                 2L,
+                "Second job offer",
                 "First job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             )
         )
@@ -118,25 +138,33 @@ class JobOfferServiceTests {
             JobOffer(
                 1L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             ),
             JobOffer(
                 2L,
+                "Second job offer",
                 "First job offer",
                 JobOffer.Status.SELECTION_PHASE,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             )
         )
@@ -151,37 +179,45 @@ class JobOfferServiceTests {
     @Test
     fun whenGetOpenJobOffers_thenReturnJobOfferDTOList(){
         val pageable = PageRequest.of(0, 5)
-        val jobOffersSet = setOf(
+        val jobOffersSet = mutableSetOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "Second job offer",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 11L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 12L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             ),
             JobOffer(
                 2L,
                 "First job offer",
+                "Mobile app development",
                 JobOffer.Status.CREATED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA)
                 )
             )
         )
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe"),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA),
             jobOffers = jobOffersSet,
-            notes = emptyList()
+            notes = mutableSetOf()
         )
 
 
@@ -209,38 +245,46 @@ class JobOfferServiceTests {
     @Test
     fun whenGetAcceptedJobOffers_thenReturnJobOfferDTOList(){
         val pageable = PageRequest.of(0, 5)
-        val jobOffersSet = setOf(
+        val jobOffersSet = mutableSetOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "Frontend development",
                 JobOffer.Status.DONE,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 15L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 16L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.APAC)
                 ),
                 Professional(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.APAC),
                     dailyRate = 100.0f
                 )
             ),
             JobOffer(
                 2L,
                 "First job offer",
+                "Backend development",
                 JobOffer.Status.CONSOLIDATED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 17L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 18L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.APAC)
                 ),
                 Professional(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 2L, name = "Jane", surname = "Austen", region = Region.APAC),
                     dailyRate = 100.0f
                 )
             )
@@ -248,8 +292,8 @@ class JobOfferServiceTests {
 
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
-            notes = emptyList(),
+            contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.APAC),
+            notes = mutableSetOf(),
             jobOffers = jobOffersSet,
             skills = emptySet(),
         )
@@ -277,38 +321,46 @@ class JobOfferServiceTests {
     @Test
     fun whenGetAbortedJobOffers_thenReturnJobOfferDTOList(){
         val pageable = PageRequest.of(0, 5)
-        val jobOffersSet = setOf(
+        val jobOffersSet = mutableSetOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 19L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 20L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.APAC),
                 ),
                 Professional(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.APAC),
                     dailyRate = 100.0f
                 )
             ),
             JobOffer(
                 2L,
+                "Second job offer",
                 "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 21L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 22L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.APAC),
                 ),
                 Professional(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 2L, name = "Jane", surname = "Austen", region = Region.APAC),
                     dailyRate = 100.0f
                 )
             )
@@ -328,39 +380,46 @@ class JobOfferServiceTests {
         val pageable = PageRequest.of(0, 5)
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe"),
-            notes = emptyList(),
-            jobOffers = emptySet()
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
+            notes = mutableSetOf(),
+            jobOffers = mutableSetOf()
         )
         val jobOffersList = listOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 24L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 25L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 customer,
                 Professional(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.LATAM),
                     dailyRate = 100.0f
                 )
             ),
             JobOffer(
                 2L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
-                setOf("smart", "group work", "organised"),
+                mutableSetOf(
+                    Note(id = 22L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 23L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )  ,              setOf("smart", "group work", "organised"),
                 Customer(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "John", surname = "Doe")
+                    contact = Contact(id = 2L, name = "John", surname = "Doe", region = Region.LATAM),
                 ),
                 Professional(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 2L, name = "Jane", surname = "Austen", region = Region.LATAM),
                     dailyRate = 100.0f
                 )
             )
@@ -383,38 +442,46 @@ class JobOfferServiceTests {
         val pageable = PageRequest.of(0, 5)
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe"),
-            notes = emptyList(),
-            jobOffers = emptySet()
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
+            notes = mutableSetOf(),
+            jobOffers = mutableSetOf()
         )
         val jobOffersList = listOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "description",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 26L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 27L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 Customer(
                     id = 1L,
-                    contact = Contact(id = 1L, name = "John", surname = "Doe")
+                    contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
                 ),
                 professional
             ),
             JobOffer(
                 2L,
                 "First job offer",
+                "Project description",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 27L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 28L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "John", surname = "Doe")
+                    contact = Contact(id = 2L, name = "John", surname = "Doe", region = Region.LATAM),
                 ),
                 Professional(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 2L, name = "Jane", surname = "Austen", region = Region.LATAM),
                     dailyRate = 100.0f
                 )
             )
@@ -438,25 +505,29 @@ class JobOfferServiceTests {
 
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe"),
-            notes = emptyList(),
-            jobOffers = emptySet()
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
+            notes = mutableSetOf(),
+            jobOffers = mutableSetOf()
         )
 
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe"),
-            notes = emptyList(),
-            jobOffers = emptySet()
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA),
+            notes = mutableSetOf(),
+            jobOffers = mutableSetOf()
         )
 
         val jobOffersList = listOf(
             JobOffer(
                 1L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("good", "fine"),
+                mutableSetOf(
+                    Note(id = 29L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 30L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work"),
                 customer,
                 professional
@@ -464,17 +535,21 @@ class JobOfferServiceTests {
             JobOffer(
                 2L,
                 "First job offer",
+                "First job offer",
                 JobOffer.Status.ABORTED,
                 2,
-                listOf("nice", "call again"),
+                mutableSetOf(
+                    Note(id = 31L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 32L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 setOf("smart", "group work", "organised"),
                 Customer(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "John", surname = "Doe")
+                    contact = Contact(id = 2L, name = "John", surname = "Doe", region = Region.LATAM),
                 ),
                 Professional(
                     id = 2L,
-                    contact = Contact(id = 2L, name = "Jane", surname = "Austen"),
+                    contact = Contact(id = 2L, name = "Jane", surname = "Austen", region = Region.LATAM),
                     dailyRate = 100.0f
                 )
             )
@@ -528,44 +603,53 @@ class JobOfferServiceTests {
         val jobOfferId = 1L
         val jobOfferUpdateDTO = JobOfferUpdateDTO(
             status = "SELECTION_PHASE",
-            notes = Optional.of(listOf("good job"))
+            notes = Optional.of(listOf(NoteDTO(id=33L, "good job", LocalDateTime.now(), "prova"))),
         )
         val jobOffer = JobOffer(
             1L,
             "First job offer",
+            "First job offer",  // This description stays
             JobOffer.Status.CREATED,
             2,
-            listOf("good", "fine"),
+            mutableSetOf(
+                Note(id = 35L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 36L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             setOf("smart", "group work"),
             Customer(
                 id = 1L,
-                contact = Contact(id = 1L, name = "John", surname = "Doe")
+                contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
             )
         )
-        val newJobOffer = JobOffer(
-            1L,
-            "First job offer",
-            JobOffer.Status.SELECTION_PHASE,
-            2,
-            listOf("good job"),
-            setOf("smart", "group work"),
-            Customer(
-                id = 1L,
-                contact = Contact(id = 1L, name = "John", surname = "Doe")
-            )
-        )
+
         every { jobOfferRepository.findById(jobOfferId) } returns Optional.of(jobOffer)
+        every { noteRepository.save(any()) } answers { firstArg() }
+        every { jobOfferRepository.save(any()) } answers { firstArg() }
+
         val result = jobOfferService.updateJobOffer(jobOfferId, jobOfferUpdateDTO)
+
         verify { jobOfferRepository.findById(jobOfferId) }
-        assertEquals(newJobOffer.toDTO(), result)
+
+        // Assert the actual returned values
+        assertEquals(jobOfferId, result.id)
+        assertEquals("First job offer", result.title)
+        assertEquals("First job offer", result.description)  // Not changed
+        assertEquals(JobOffer.Status.SELECTION_PHASE, result.status)
+        assertEquals(2, result.duration)
+        assertEquals(1, result.notes.size)
+        assertEquals(33L, result.notes[0].id)
+        assertEquals("good job", result.notes[0].title)
+        assertEquals("prova", result.notes[0].description)
+        assertEquals(setOf("smart", "group work"), result.requiredSkills)
     }
+
 
     @Test
     fun updateJobOffer_thenReturnJobOfferNotFound() {
         val jobOfferId = 100L
         val jobOfferUpdateDTO = JobOfferUpdateDTO(
             status = "SELECTION_PHASE",
-            notes = Optional.of(listOf("good job")),
+            notes = Optional.of(listOf(NoteDTO(47L, "good job", LocalDateTime.now(), "prova" ))),
             professionalId = Optional.of(1L)
         )
         every { jobOfferRepository.findById(jobOfferId) } returns Optional.empty()
@@ -582,19 +666,23 @@ class JobOfferServiceTests {
         val jobOfferId = 1L
         val jobOfferUpdateDTO = JobOfferUpdateDTO(
             status = "INVALID_STATUS",
-            notes = Optional.of(listOf("good job")),
+            notes = Optional.of(listOf(NoteDTO(48L, "good job", LocalDateTime.now(), "prova" ))),
             professionalId = Optional.of(1L)
         )
         val jobOffer = JobOffer(
             1L,
             "First job offer",
+            "First job offer",
             JobOffer.Status.CREATED,
             2,
-            listOf("good", "fine"),
+            mutableSetOf(
+                Note(id = 40L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 41L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             setOf("smart", "group work"),
             Customer(
                 id = 1L,
-                contact = Contact(id = 1L, name = "John", surname = "Doe")
+                contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
             )
         )
         every { jobOfferRepository.findById(jobOfferId) } returns Optional.of(jobOffer)
@@ -613,17 +701,21 @@ class JobOfferServiceTests {
         val jobOffer = JobOffer(
             1L,
             "First job offer",
+            "Description",
             JobOffer.Status.SELECTION_PHASE,
             2,
-            listOf("good", "fine", "good job"),
+            mutableSetOf(
+                Note(id = 50L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 51L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             setOf("smart", "group work"),
             Customer(
                 id = 1L,
-                contact = Contact(id = 1L, name = "John", surname = "Doe")
+                contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
             ),
             Professional(
                 id = 1L,
-                contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
+                contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.LATAM),
                 dailyRate = 100.0f
             ),
             value = 40.0f
@@ -642,13 +734,18 @@ class JobOfferServiceTests {
         val jobOffer = JobOffer(
             1L,
             "First job offer",
+            "Description",
             JobOffer.Status.SELECTION_PHASE,
             2,
-            listOf("good", "fine", "good job"),
+            mutableSetOf(
+                Note(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                Note(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now()),
+                Note(id = 3L, title = "Note 3", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             setOf("smart", "group work"),
             Customer(
                 id = 1L,
-                contact = Contact(id = 1L, name = "John", surname = "Doe")
+                contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
             )
         )
         every { jobOfferRepository.findById(jobOfferId) } returns Optional.of(jobOffer)

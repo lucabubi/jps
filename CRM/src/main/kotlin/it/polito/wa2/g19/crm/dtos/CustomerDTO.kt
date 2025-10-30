@@ -5,7 +5,7 @@ import it.polito.wa2.g19.crm.entities.Customer
 data class CustomerDTO(
     val id: Long = 0,
     val contact: ContactDTO,
-    val notes: List<String> = emptyList(),
+    val notes: List<NoteDTO> = emptyList(),
     val jobOffers: Set<JobOfferDTO> = emptySet()
 ){
     override fun equals(other: Any?): Boolean {
@@ -28,7 +28,7 @@ data class CustomerDTO(
         return Customer(
             id = this.id,
             contact = this.contact.toEntity(),
-            notes = this.notes,
+            notes = this.notes.map { it.toEntity() }.toMutableSet(),
             jobOffers = this.jobOffers.map { it.toEntity() }.toMutableSet()
         )
     }

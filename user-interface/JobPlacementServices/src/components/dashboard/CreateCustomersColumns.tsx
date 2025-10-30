@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import { ColumnDef } from "@tanstack/react-table"
-import { Customer } from "@/lib/API";
+import { Customer, Note } from "@/lib/API";
 import { Badge } from "@/components/ui/badge"
 import { Copy, Mail, MoreHorizontal, Trash2, UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button"
@@ -198,7 +198,7 @@ export const createCustomersColumns = (onDirty: OnDirty): ColumnDef<Customer>[] 
     },
     { accessorKey: "contact.ssn", header: "SSN" },
     { accessorKey: "notes", header: "Notes", cell: ({ getValue }) => {
-        const notes = getValue<string[]>();
+        const notes = getValue<Note[]>();
         return notes.length ? notes.length : "No notes.";
     } },
     {

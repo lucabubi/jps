@@ -44,6 +44,16 @@ export type Customer = {
     jobOffers: JobOffer[];
 };
 
+export type Note = {
+    id: number;
+    title: string;
+    description: string;
+    createdAt: string;
+    customer: Customer | null;
+    professional: Professional | null;
+    jobOffer: JobOffer | null;
+}
+
 export type Message = {
     id: number;
     subject: string;

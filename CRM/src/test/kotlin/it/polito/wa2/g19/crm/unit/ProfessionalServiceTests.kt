@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import it.polito.wa2.g19.crm.dtos.ContactDTO
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalUpdateDTO
 import it.polito.wa2.g19.crm.entities.*
@@ -12,21 +13,22 @@ import it.polito.wa2.g19.crm.exceptions.ProfessionalNotAvailableException
 import it.polito.wa2.g19.crm.exceptions.ProfessionalNotFoundException
 import it.polito.wa2.g19.crm.repositories.ProfessionalRepository
 import it.polito.wa2.g19.crm.services.ProfessionalServiceImpl
-import it.polito.wa2.g19.crm.kafka.ProfessionalEventsProducer
+import it.polito.wa2.g19.crm.repositories.NoteRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import java.time.LocalDateTime
 import java.util.*
 
 class ProfessionalServiceTests {
     private val professionalRepository: ProfessionalRepository = mockk()
-    private val professionalEventsProducer: ProfessionalEventsProducer = mockk()
+    private val noteRepository: NoteRepository = mockk()
     private val professionalService =
         ProfessionalServiceImpl(
             professionalRepository,
-            professionalEventsProducer
+            noteRepository
         )
 
 
@@ -40,28 +42,38 @@ class ProfessionalServiceTests {
                 category= Category.PROFESSIONAL,
                 emails= emptySet(),
                 addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                telephones= emptySet(),
+                region = Region.NA),
+            notes = listOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
-            location = "Location"
         )
         val professionalSlot = slot<Professional>()
+        val noteSlot = slot<Note>()
         every { professionalRepository.save(capture(professionalSlot)) } answers { professionalSlot.captured }
+        every { noteRepository.save(capture(noteSlot)) } answers { noteSlot.captured }  // Add this line
+
 
         // Act
         val result = professionalService.createProfessional(professionalDTO)
-
+        val capturedNotes = professionalSlot.captured.notes.sortedBy { it.id }
+        val expectedNotes = professionalDTO.notes.map { it.toEntity() }.sortedBy { it.id }
         // Assert
         verify { professionalRepository.save(any()) }
         assertEquals(professionalDTO, result)
         assertEquals(professionalDTO.contact, professionalSlot.captured.contact.toDTO())
-        assertEquals(professionalDTO.notes, professionalSlot.captured.notes)
+        assertEquals(expectedNotes.size, capturedNotes.size)
+        capturedNotes.zip(expectedNotes).forEach { (captured, expected) ->
+            assertEquals(expected.title, captured.title)
+            assertEquals(expected.description, captured.description)
+        }
         assertEquals(professionalDTO.skills, professionalSlot.captured.skills)
         assertEquals(professionalDTO.dailyRate, professionalSlot.captured.dailyRate)
         assertEquals(professionalDTO.employmentState, professionalSlot.captured.employmentState)
-        assertEquals(professionalDTO.location, professionalSlot.captured.location)
     }
 
     @Test
@@ -71,7 +83,6 @@ class ProfessionalServiceTests {
         val professionalUpdateDTO = ProfessionalUpdateDTO(
             dailyRate = Optional.of(200f),
             employmentState = Optional.of(Professional.State.AVAILABLE_FOR_WORK),
-            location = Optional.of("Turin")
         )
         val contactDTO = ContactDTO(
             id = 1L,
@@ -80,16 +91,19 @@ class ProfessionalServiceTests {
             category = Category.PROFESSIONAL,
             emails = emptySet(),
             addresses = emptySet(),
-            telephones = emptySet()
+            telephones = emptySet(),
+            region = Region.NA
         )
         val professionalDTO = ProfessionalDTO(
             id = professionalId,
             contact = contactDTO,
-            notes = listOf("Note 1", "Note 2"),
+            notes = listOf(
+                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
-            location = "Milan"
         )
         //given
         every { professionalRepository.findById(professionalId) } returns Optional.of(professionalDTO.toEntity())
@@ -101,7 +115,6 @@ class ProfessionalServiceTests {
         verify { professionalRepository.save(any()) }
         assertEquals(professionalUpdateDTO.dailyRate.get(), result.dailyRate)
         assertEquals(professionalUpdateDTO.employmentState.get(), result.employmentState)
-        assertEquals(professionalUpdateDTO.location.get(), result.location)
     }
 
     @Test
@@ -110,7 +123,6 @@ class ProfessionalServiceTests {
         val professionalUpdateDTO = ProfessionalUpdateDTO(
             dailyRate = Optional.of(200f),
             employmentState = Optional.of(Professional.State.AVAILABLE_FOR_WORK),
-            location = Optional.of("Turin")
         )
         //given
         every { professionalRepository.findById(professionalId) } returns Optional.of(
@@ -120,30 +132,36 @@ class ProfessionalServiceTests {
                     name = "John",
                     surname = "Doe",
                     category = Category.PROFESSIONAL,
-                    emails = emptySet(),
-                    addresses = emptySet(),
-                    telephones = emptySet()
+                    emails = mutableSetOf(),
+                    addresses = mutableSetOf(),
+                    telephones = mutableSetOf(),
+                    region = Region.NA
                 ),
-                notes = listOf("Note 1", "Note 2"),
+                notes = mutableSetOf(
+                    Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),
                 skills = emptySet(),
                 dailyRate = 100f,
                 employmentState = Professional.State.EMPLOYED,
-                location = "Milan",
-                jobOffers = setOf(
+                jobOffers = mutableSetOf(
                     JobOffer(
                         1L,
+                        "Important job",
                         "First job offer",
                         JobOffer.Status.CONSOLIDATED,
                         2,
-                        listOf("good", "fine", "good job"),
-                        setOf("smart", "group work"),
+                        mutableSetOf(
+                            Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                            Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                        ),                        setOf("smart", "group work"),
                         Customer(
                             id = 1L,
-                            contact = Contact(id = 1L, name = "John", surname = "Doe")
+                            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.NA),
                         ),
                         Professional(
                             id = 1L,
-                            contact = Contact(id = 1L, name = "Jane", surname = "Austen"),
+                            contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.NA),
                             dailyRate = 100.0f
                         ),
                         value = 40.0f
@@ -167,7 +185,6 @@ class ProfessionalServiceTests {
         val professionalUpdateDTO = ProfessionalUpdateDTO(
             dailyRate = Optional.of(200f),
             employmentState = Optional.of(Professional.State.AVAILABLE_FOR_WORK),
-            location = Optional.of("Turin")
         )
         //given
         every { professionalRepository.findById(professionalId) } returns Optional.empty()
@@ -190,7 +207,8 @@ class ProfessionalServiceTests {
             category = Category.PROFESSIONAL,
             emails = emptySet(),
             addresses = emptySet(),
-            telephones = emptySet()
+            telephones = emptySet(),
+            region = Region.NA
         )
         val contactDTO2 = ContactDTO(
             id = 2L,
@@ -199,17 +217,24 @@ class ProfessionalServiceTests {
             category = Category.PROFESSIONAL,
             emails = emptySet(),
             addresses = emptySet(),
-            telephones = emptySet()
+            telephones = emptySet(),
+            region = Region.NA
         )
         val professionalDTO1 = ProfessionalDTO(
             id = 1L,
             contact = contactDTO1,
-            notes = listOf("Note 1", "Note 2"),
+            notes = listOf(
+                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
         )
         val professionalDTO2 = ProfessionalDTO(
             id = 2L,
             contact = contactDTO2,
-            notes = listOf("Note 1", "Note 2"),
+            notes = listOf(
+                NoteDTO(id = 11L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 12L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
         )
         val professionals = listOf(professionalDTO1.toEntity(), professionalDTO2.toEntity())
         val pageable = PageRequest.of(0, 5)
@@ -232,14 +257,17 @@ class ProfessionalServiceTests {
                 name= "John",
                 surname= "Doe",
                 category= Category.PROFESSIONAL,
-                emails= emptySet(),
-                addresses= emptySet(),
-                telephones= emptySet(),),
-            notes = listOf("Note 1", "Note 2"),
+                emails= mutableSetOf(),
+                addresses= mutableSetOf(),
+                telephones= mutableSetOf(),
+                region = Region.NA),
+                notes = mutableSetOf(
+                    Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
-            location = "Turin"
         )
         every { professionalRepository.findById(id) } returns Optional.of(professional)
 

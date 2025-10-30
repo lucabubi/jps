@@ -4,6 +4,7 @@ import it.polito.wa2.g19.crm.dtos.CreateJobOfferDTO
 import it.polito.wa2.g19.crm.dtos.CustomerMinimalDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferUpdateDTO
+import it.polito.wa2.g19.crm.dtos.toDTO
 import it.polito.wa2.g19.crm.entities.JobOffer
 import it.polito.wa2.g19.crm.entities.Professional
 import it.polito.wa2.g19.crm.exceptions.*
@@ -19,6 +20,7 @@ class JobOfferServiceImpl(
     private val jobOfferRepository: JobOfferRepository,
     private val customerRepository: CustomerRepository,
     private val professionalRepository: ProfessionalRepository,
+    private val noteRepository: NoteRepository
 ) : JobOfferService {
     private val logger = KotlinLogging.logger {}
 
@@ -35,11 +37,12 @@ class JobOfferServiceImpl(
             customer = CustomerMinimalDTO(
                 id = customer.id,
                 contact = customer.contact.toDTO(),
-                notes = customer.notes
+                notes = customer.notes.map { it.toDTO() },
             )
         ).toEntity()
         logger.info("Creating job offer: $jobOffer")
         val savedJobOffer = jobOfferRepository.save(jobOffer)
+        jobOffer.notes.map { noteRepository.save(it) }.toMutableSet()
         logger.info("Job offer saved: $savedJobOffer ${savedJobOffer.customer.contact.id}")
         return savedJobOffer.toDTO()
     }
@@ -141,8 +144,9 @@ class JobOfferServiceImpl(
         }
 
         requestDTO.notes.ifPresent {
-            jobOffer.notes = requestDTO.notes.get()
+            jobOffer.notes = requestDTO.notes.get().map { noteDTO -> noteDTO.toEntity() }.toMutableSet()
         }
+        requestDTO.notes.ifPresent { it -> it.map {noteDTO -> noteDTO.toEntity() }.forEach { noteRepository.save(it) } }
         val changedFields = mutableSetOf<String>()
         changedFields.add("status")
         if(requestDTO.notes.isPresent){
