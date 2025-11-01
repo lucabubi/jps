@@ -16,5 +16,6 @@ data class CreateContactDTO (
     val category: Category = Category.UNKNOWN,
     val emails: List<String> = emptyList(),
     val telephones: List<String> = emptyList(),
-    val addresses: List<AddressDTO> = emptyList()
+    val addresses: List<AddressDTO> = emptyList(),
+    val noteDescription: String? = null,
 )

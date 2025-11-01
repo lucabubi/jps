@@ -1,7 +1,6 @@
 package it.polito.wa2.g19.crm.entities
 
 import it.polito.wa2.g19.crm.dtos.ProfessionalDTO
-import it.polito.wa2.g19.crm.dtos.toDTO
 import jakarta.persistence.*
 
 @Entity
@@ -12,8 +11,6 @@ class Professional (
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "contact_id", referencedColumnName = "id")
     var contact: Contact,
-    @OneToMany(mappedBy = "professional", cascade = [CascadeType.ALL])
-    var notes: MutableSet<Note> = mutableSetOf(),
     @ElementCollection
     var skills: Set<String> = emptySet(),
     var dailyRate: Float = 0.0f,
@@ -24,7 +21,6 @@ class Professional (
     fun toDTO() = ProfessionalDTO(
         id = this.id,
         contact = this.contact.toDTO(),
-        notes = this.notes.map { it.toDTO() },
         skills = this.skills,
         dailyRate = this.dailyRate,
         employmentState = this.employmentState,

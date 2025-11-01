@@ -1,5 +1,6 @@
 package it.polito.wa2.g19.crm.entities
 
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import jakarta.persistence.Id
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -17,14 +18,18 @@ class Note(
     var description: String?,
 
     @ManyToOne
-    @JoinColumn(name = "customer_id")
-    var customer: Customer? = null,
-
-    @ManyToOne
-    @JoinColumn(name = "professional_id")
-    var professional: Professional? = null,
+    @JoinColumn(name = "contact_id")
+    var contact: Contact? = null,
 
     @ManyToOne
     @JoinColumn(name = "job_offer_id")
     var jobOffer: JobOffer? = null
-)
+) {
+
+    fun toDTO() = NoteDTO(
+        id = this.id,
+        title = this.title,
+        createdAt = this.createdAt,
+        description = this.description,
+    )
+}

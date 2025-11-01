@@ -5,7 +5,6 @@ import it.polito.wa2.g19.crm.entities.Customer
 data class CustomerDTO(
     val id: Long = 0,
     val contact: ContactDTO,
-    val notes: List<NoteDTO> = emptyList(),
     val jobOffers: Set<JobOfferDTO> = emptySet()
 ){
     override fun equals(other: Any?): Boolean {
@@ -13,14 +12,12 @@ data class CustomerDTO(
         if (other !is CustomerDTO) return false
         if (id != other.id) return false
         if (contact != other.contact) return false
-        if (notes != other.notes) return false
         return true
     }
 
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + contact.hashCode()
-        result = 31 * result + notes.hashCode()
         return result
     }
 
@@ -28,7 +25,6 @@ data class CustomerDTO(
         return Customer(
             id = this.id,
             contact = this.contact.toEntity(),
-            notes = this.notes.map { it.toEntity() }.toMutableSet(),
             jobOffers = this.jobOffers.map { it.toEntity() }.toMutableSet()
         )
     }

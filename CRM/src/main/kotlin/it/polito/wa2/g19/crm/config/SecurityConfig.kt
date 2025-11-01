@@ -7,6 +7,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
@@ -68,5 +70,24 @@ class SecurityConfig {
             .csrf { it.disable() }
             .cors { it.disable() }
             .build()
+    }
+
+    object SecurityUtils {
+        fun getCurrentJwt(): Jwt? {
+            val auth = SecurityContextHolder.getContext().authentication
+            return auth?.principal as? Jwt
+        }
+
+        fun getCurrentUsername(): String? {
+            return getCurrentJwt()?.claims?.get("preferred_username") as? String
+                ?: SecurityContextHolder.getContext().authentication?.name
+        }
+
+        fun getUserFullName(): String? {
+            val jwt = getCurrentJwt()
+            val givenName = jwt?.claims?.get("given_name") as? String
+            val familyName = jwt?.claims?.get("family_name") as? String
+            return if (givenName != null && familyName != null) "$givenName $familyName" else null
+        }
     }
 }

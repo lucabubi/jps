@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 import { ColumnDef } from "@tanstack/react-table"
-import { Customer, Note } from "@/lib/API";
+import {Customer, Email} from "@/lib/API";
 import { Badge } from "@/components/ui/badge"
 import { Copy, Mail, MoreHorizontal, Trash2, UserPen } from "lucide-react";
 import { Button } from "@/components/ui/button"
@@ -173,34 +173,43 @@ export const createCustomersColumns = (onDirty: OnDirty): ColumnDef<Customer>[] 
         id: "emails",
         header: "Email",
         accessorFn: (row) => {
+            // emails may be stored as Email objects or plain strings; normalize to Email[]
             const list = Array.isArray(row.contact?.emails) ? row.contact.emails : [];
-            return list.map((e) => (typeof e === "string" ? e : e?.email)).filter(Boolean) as string[];
+            return list
+                .map((e, i) => {
+                    if (e == null) return undefined;
+                    if (typeof e === "string") {
+                        // create a minimal Email-shaped object for rendering
+                        return { id: `s-${i}`, email: e } as unknown as Email;
+                    }
+                    // assume it's already an Email-like object
+                    return e as Email;
+                })
+                .filter(Boolean) as Email[];
         },
         cell: ({ getValue }) => {
-            const emails = getValue<string[]>();
+            const emails = getValue<Email[]>();
             return (
                 <div className="flex flex-wrap gap-1">
-                    {emails.length
-                        ? emails.map((em) => (
+                    {emails.length ? (
+                        emails.map((em, idx) => (
                             <Badge
-                                key={em}
+                                key={String((em as any).id ?? `email-${idx}`)}
                                 variant="secondary"
                                 className="rounded-md"
                             >
                                 <Mail className='size-3 mr-1' />
-                                {em}
+                                {em.email}
                             </Badge>
                         ))
-                        : "No data."}
+                    ) : (
+                        "No data."
+                    )}
                 </div>
             );
         },
     },
     { accessorKey: "contact.ssn", header: "SSN" },
-    { accessorKey: "notes", header: "Notes", cell: ({ getValue }) => {
-        const notes = getValue<Note[]>();
-        return notes.length ? notes.length : "No notes.";
-    } },
     {
         id: "actions",
         header: "Actions",

@@ -38,6 +38,9 @@ class CrmApplicationTests {
     @Autowired
     private lateinit var jobOfferRepository: JobOfferRepository
 
+    @Autowired
+    private lateinit var noteRepository: NoteRepository
+
 
     @Autowired
     private lateinit var restTemplate: TestRestTemplate
@@ -52,7 +55,14 @@ class CrmApplicationTests {
             registry.add("spring.datasource.url", postgres::getJdbcUrl)
             registry.add("spring.datasource.username", postgres::getUsername)
             registry.add("spring.datasource.password", postgres::getPassword)
+            registry.add("spring.datasource.driver-class-name") { "org.postgresql.Driver" }
+
+
+            registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri") { "http://dummy-test-issuer.com" }
+            registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri") { "http://dummy-test-issuer.com/.well-known/jwks.json" }
         }
+
+        private val FIXED_TIMESTAMP = LocalDateTime.of(2025, 10, 30, 12, 0, 0)
     }
 
     private val customerDTO1 = CustomerDTO(
@@ -64,10 +74,10 @@ class CrmApplicationTests {
             addresses = emptySet(),
             telephones = emptySet(),
             region = Region.NA,
-        ),
-        notes = listOf(
-            NoteDTO(id = 10L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-            NoteDTO(id = 11L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            notes = setOf(
+                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = FIXED_TIMESTAMP),
+                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = FIXED_TIMESTAMP.plusSeconds(1))
+            ),
         ),
         jobOffers = emptySet()
     )
@@ -80,10 +90,10 @@ class CrmApplicationTests {
             addresses = emptySet(),
             telephones = emptySet(),
             region = Region.NA,
-        ),
-        notes = listOf(
-            NoteDTO(id = 1, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-            NoteDTO(id = 2, title = "Additional note", description = "Description 2", createdAt = LocalDateTime.now())
+            notes = setOf(
+                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = FIXED_TIMESTAMP),
+                NoteDTO(id = 4L, title = "Additional note", description = "Description 2", createdAt = FIXED_TIMESTAMP.plusSeconds(1))
+            )
         ),
         jobOffers = emptySet()
     )
@@ -96,10 +106,10 @@ class CrmApplicationTests {
             addresses = emptySet(),
             telephones = emptySet(),
             region = Region.NA,
-        ),
-        notes = listOf(
-            NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-            NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            notes = setOf(
+                NoteDTO(id = 5L, title = "Note 1", description = "Description 1", createdAt = FIXED_TIMESTAMP),
+                NoteDTO(id = 6L, title = "Note 2", description = "Description 2", createdAt = FIXED_TIMESTAMP.plusSeconds(1))
+            )
         ),
         skills = setOf("Skill 1", "Skill 2"),
         location = "Milan"
@@ -113,10 +123,10 @@ class CrmApplicationTests {
             addresses = emptySet(),
             telephones = emptySet(),
             region = Region.NA,
-        ),
-        notes = listOf(
-            NoteDTO(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-            NoteDTO(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            notes = setOf(
+                NoteDTO(id = 7L, title = "Note 1", description = "Description 1", createdAt = FIXED_TIMESTAMP),
+                NoteDTO(id = 8L, title = "Note 2", description = "Description 2", createdAt = FIXED_TIMESTAMP.plusSeconds(1))
+            )
         ),
         skills = setOf("Skill", "Another skill"),
         location = "Turin"
@@ -124,22 +134,23 @@ class CrmApplicationTests {
 
     private val createJobOfferDTO = CreateJobOfferDTO(
         description = "Description 1",
-        notes = listOf(
-            NoteDTO(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-            NoteDTO(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-        ),
+        noteDescription = "Description 1",
         customerId = 1L
+    )
+    private val noteDTO = NoteDTO(
+        title = "Job Offer",
+        description = createJobOfferDTO.noteDescription,
+        createdAt = FIXED_TIMESTAMP
     )
     private val jobOfferDTO = JobOfferDTO(
         title = "Job Offer",
         description = createJobOfferDTO.description,
         duration = createJobOfferDTO.duration,
-        notes = createJobOfferDTO.notes,
+        notes = listOf(noteDTO),
         requiredSkills = createJobOfferDTO.requiredSkills,
         customer = CustomerMinimalDTO(
             id = customerDTO1.id,
             contact = customerDTO1.contact,
-            notes = customerDTO1.notes
         )
     )
     private val APIURL = "http://localhost:8080/API/"
@@ -160,7 +171,7 @@ class CrmApplicationTests {
     fun testCreateCustomer_status200() {
 
 
-        val response = restTemplate.postForEntity<CustomerDTO>(APIURL + "customers/", customerDTO1, CustomerDTO::class.java)
+        val response = restTemplate.postForEntity(APIURL + "customers/", customerDTO1, CustomerDTO::class.java)
         assertNotNull(response)
         assertEquals(HttpStatus.OK, response.statusCode)
 
@@ -168,7 +179,7 @@ class CrmApplicationTests {
 
     @Test
     fun testCreateProfessional_status200() {
-        val response = restTemplate.postForEntity<ProfessionalDTO>(APIURL + "professionals/", professionalDTO1, ProfessionalDTO::class.java)
+        val response = restTemplate.postForEntity(APIURL + "professionals/", professionalDTO1, ProfessionalDTO::class.java)
 
 
         assertNotNull(response)

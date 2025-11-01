@@ -8,6 +8,7 @@ import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import mu.KotlinLogging
 
+
 @Service
 @Transactional
 class CustomerServiceImpl (
@@ -17,17 +18,15 @@ class CustomerServiceImpl (
     private val logger = KotlinLogging.logger {}
 
     override fun createCustomer(customerDTO : CustomerDTO): CustomerDTO {
+
         // Convert DTO to entity
         val customer = Customer(
             contact = customerDTO.contact.toEntity(),
-            notes = customerDTO.notes.map {
-                it.toEntity()
-            }.toMutableSet(),
             jobOffers = customerDTO.jobOffers.map { it.toEntity() }.toMutableSet()
         )
         logger.info("Creating customer: $customer")
         // Save to database
-        customer.notes.map{ noteRepository.save(it) }
+        customer.contact.notes.map{ noteRepository.save(it) }
         val savedCustomer = customerRepository.save(customer)
         logger.info("Customer saved: $savedCustomer")
         // Convert entity back to DTO and return
@@ -68,9 +67,9 @@ class CustomerServiceImpl (
     override fun updateCustomerNotes(id: Long, notes: List<NoteDTO>) : CustomerDTO {
         val customer = customerRepository.findById(id).orElseThrow { CustomerNotFoundException("Contact with id $id not found") }
         logger.info { "Updating customer id:$id notes..." }
-        customer.notes = notes.map { it.toEntity() }.toMutableSet()
+        customer.contact.notes = notes.map { it.toEntity() }.toMutableSet()
         // .save added for good practice, even if not needed because of "dirty checking" performed by Spring Data JPA
-        customer.notes.forEach{ noteRepository.save(it) }
+        customer.contact.notes.forEach{ noteRepository.save(it) }
         customerRepository.save(customer)
         logger.info { "Customer id:$id notes updated" }
         return customer.toDTO()

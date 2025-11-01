@@ -2,7 +2,6 @@ package it.polito.wa2.g19.crm.entities
 
 import it.polito.wa2.g19.crm.dtos.CustomerMinimalDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
-import it.polito.wa2.g19.crm.dtos.toDTO
 import jakarta.persistence.*
 
 // Global fixed value for profit margin
@@ -41,8 +40,7 @@ class JobOffer(
             customer = CustomerMinimalDTO(
                 id = this.customer.id,
                 contact = this.customer.contact.toDTO(),
-                notes = this.customer.notes.map { it.toDTO() },
-            ),
+                ),
             professional = this.professional?.toDTO(),
             value = this.value
         )

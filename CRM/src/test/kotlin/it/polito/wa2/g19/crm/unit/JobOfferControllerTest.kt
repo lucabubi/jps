@@ -17,6 +17,7 @@ import org.springframework.context.annotation.FilterType
 import org.springframework.data.domain.PageRequest
 import it.polito.wa2.g19.crm.services.JobOfferService
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -25,6 +26,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 import java.util.*
 
+@ActiveProfiles("h2")
 @WebMvcTest(
     controllers = [JobOfferController::class],
     excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [EnableWebSecurity::class])]
@@ -107,11 +109,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            mutableSetOf(
-                Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                        Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                        Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             jobOffers = mutableSetOf()
         )
@@ -188,11 +190,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            notes = mutableSetOf(
-                Note(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             jobOffers = mutableSetOf()
         )
@@ -219,11 +221,11 @@ class JobOfferControllerTest(
                         emails = mutableSetOf(),
                         addresses = mutableSetOf(),
                         telephones = mutableSetOf(),
-                        region = Region.NA
-                    ),
-                    notes = mutableSetOf(
-                        Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                        Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                        region = Region.NA,
+                        notes = mutableSetOf(
+                            Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                            Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                        )
                     ),
                     jobOffers = mutableSetOf()
                 )
@@ -249,11 +251,11 @@ class JobOfferControllerTest(
                         emails = mutableSetOf(),
                         addresses = mutableSetOf(),
                         telephones = mutableSetOf(),
-                        region = Region.NA
-                    ),
-                    notes = mutableSetOf(
-                        Note(id = 17L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                        Note(id = 18L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                        region = Region.NA,
+                        notes = mutableSetOf(
+                            Note(id = 17L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                            Note(id = 18L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                        )
                     ),
                     jobOffers = mutableSetOf()
 
@@ -354,11 +356,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            notes = mutableSetOf(
-                Note(id = 23L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 24L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 23L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 24L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             jobOffers = mutableSetOf()
         )
@@ -441,11 +443,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            notes = mutableSetOf(
-                Note(id = 29L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 30L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 29L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 30L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             skills = emptySet(),
             dailyRate = 100f,
@@ -537,11 +539,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            notes = mutableSetOf(
-                Note(id = 33L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 34L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 33L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 34L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             jobOffers = mutableSetOf()
         )
@@ -555,11 +557,11 @@ class JobOfferControllerTest(
                 emails = mutableSetOf(),
                 addresses = mutableSetOf(),
                 telephones = mutableSetOf(),
-                region = Region.NA
-            ),
-            notes = mutableSetOf(
-                Note(id = 35L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 36L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 35L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 36L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             skills = emptySet(),
             dailyRate = 100f,

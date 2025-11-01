@@ -21,6 +21,7 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.FilterType
 import org.springframework.http.MediaType
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -28,6 +29,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDateTime
 
+@ActiveProfiles("h2")
 @WebMvcTest(
     controllers = [ProfessionalController::class],
     excludeFilters = [ComponentScan.Filter(type = FilterType.ANNOTATION, classes = [EnableWebSecurity::class])]
@@ -48,10 +50,11 @@ class ProfessionalControllerTests(@param:Autowired val mockMvc: MockMvc, @param:
                 emails= emptySet(),
                 addresses= emptySet(),
                 telephones= emptySet(),
-                region = Region.NA,),
-            notes = listOf(
-                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = setOf(
+                    NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             skills = emptySet(),
             dailyRate = 100f,
@@ -83,10 +86,11 @@ class ProfessionalControllerTests(@param:Autowired val mockMvc: MockMvc, @param:
                 emails= emptySet(),
                 addresses= emptySet(),
                 telephones= emptySet(),
-                region = Region.NA,),
-            notes = listOf(
-                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                region = Region.NA,
+                notes = setOf(
+                    NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             skills = emptySet(),
             dailyRate = 100f,

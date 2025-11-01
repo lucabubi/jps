@@ -78,17 +78,17 @@ class DataSeeder(
         // ## 3. CUSTOMER
         // ##################################################
         val cust1 = Customer(contact = savedC1)
-        cust1.notes = mutableSetOf(
-            Note(title = "Old customer", description = "", createdAt = LocalDateTime.now(), customer = cust1),
-            Note(title = "Prefers to be contacted via email", description = "", createdAt = LocalDateTime.now(), customer = cust1)
+        cust1.contact.notes = mutableSetOf(
+            Note(title = "Old customer", description = "", createdAt = LocalDateTime.now(), contact = cust1.contact),
+            Note(title = "Prefers to be contacted via email", description = "", createdAt = LocalDateTime.now(), contact = cust1.contact)
         )
         val cust2 = Customer(contact = savedC2)
-        cust2.notes = mutableSetOf(
-            Note(title = "Customer Info", description = "New customer, interested in web development services.", createdAt = LocalDateTime.now(), customer = cust2)
+        cust2.contact.notes = mutableSetOf(
+            Note(title = "Customer Info", description = "New customer, interested in web development services.", createdAt = LocalDateTime.now(), contact = cust2.contact)
         )
         val cust3 = Customer(contact = savedC5)
-        cust3.notes = mutableSetOf(
-            Note(title = "Company Info", description = "Innovative Startup, IoT Industry", createdAt = LocalDateTime.now(), customer = cust3)
+        cust3.contact.notes = mutableSetOf(
+            Note(title = "Company Info", description = "Innovative Startup, IoT Industry", createdAt = LocalDateTime.now(), contact = cust3.contact)
         )
 
         val (savedCust1, savedCust2, savedCust3) =
@@ -103,8 +103,8 @@ class DataSeeder(
             contact = savedC3
         )
         prof1.skills = mutableSetOf("Kotlin", "Spring Boot", "JPA/Hibernate", "PostgreSQL")
-        prof1.notes = mutableSetOf(
-            Note(title = "Experience", description = "Senior developer, 10+ years experience", createdAt = LocalDateTime.now(), professional = prof1)
+        prof1.contact.notes = mutableSetOf(
+            Note(title = "Experience", description = "Senior developer, 10+ years experience", createdAt = LocalDateTime.now(), contact = prof1.contact)
         )
         val prof2 = Professional(
             dailyRate = 120.0F,
@@ -112,9 +112,9 @@ class DataSeeder(
             contact = savedC4
         )
         prof2.skills = mutableSetOf("React", "TypeScript", "Node.js", "UX/UI Design")
-        prof2.notes = mutableSetOf(
-            Note(title = "Specialization", description = "Front-end specialist", createdAt = LocalDateTime.now(), professional = prof2),
-            Note(title = "Employment Status", description = "Actually employed, considers offers", createdAt = LocalDateTime.now(), professional = prof2)
+        prof2.contact.notes = mutableSetOf(
+            Note(title = "Specialization", description = "Front-end specialist", createdAt = LocalDateTime.now(), contact = prof2.contact),
+            Note(title = "Employment Status", description = "Actually employed, considers offers", createdAt = LocalDateTime.now(), contact = prof2.contact)
         )
 
         val (savedProf1, savedProf2) =

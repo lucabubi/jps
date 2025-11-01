@@ -1,5 +1,7 @@
 package it.polito.wa2.g19.crm.services
 
+import it.polito.wa2.g19.crm.config.SecurityConfig
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalDTO
 import it.polito.wa2.g19.crm.dtos.ProfessionalUpdateDTO
 import it.polito.wa2.g19.crm.entities.JobOffer
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 import it.polito.wa2.g19.crm.repositories.ProfessionalRepository
 import mu.KotlinLogging
+import java.time.LocalDateTime
 
 @Service
 @Transactional
@@ -24,9 +27,16 @@ class ProfessionalServiceImpl(
 
     override fun createProfessional(professionalDTO: ProfessionalDTO): ProfessionalDTO {
         // Convert DTO to entity
+        val noteList = setOf(
+            NoteDTO(
+                title = "Operator ${SecurityConfig.SecurityUtils.getUserFullName()} created a new professional",
+                createdAt = LocalDateTime.now(),
+                description = null,
+                )
+        )
+        professionalDTO.contact.notes = noteList
         val professional = Professional(
             contact = professionalDTO.contact.toEntity(),
-            notes = professionalDTO.notes.map { it.toEntity() }.toMutableSet(),
             skills = professionalDTO.skills,
             dailyRate = professionalDTO.dailyRate,
             employmentState = professionalDTO.employmentState,
@@ -34,7 +44,6 @@ class ProfessionalServiceImpl(
         logger.info("Creating professional: $professional")
         // Save to database
         val savedProfessional = professionalRepository.save(professional)
-        professional.notes.map{ noteRepository.save(it) }
         logger.info("Professional saved: $savedProfessional")
         val savedProfessionalDTO = savedProfessional.toDTO()
         // Return
@@ -78,7 +87,6 @@ class ProfessionalServiceImpl(
         if(activeJobOffer.isNotEmpty() && updateDTO.employmentState.isPresent)
             throw ProfessionalNotAvailableException("Professional with id $id is currently working")
         logger.info { "Updating professional id:$id..." }
-        updateDTO.notes.ifPresent { professional.notes = it.map { noteDTO -> noteDTO.toEntity() }.toMutableSet() }
         updateDTO.skills.ifPresent { professional.skills = it }
         updateDTO.dailyRate.ifPresent { professional.dailyRate = it }
         updateDTO.employmentState.ifPresent { professional.employmentState = it }

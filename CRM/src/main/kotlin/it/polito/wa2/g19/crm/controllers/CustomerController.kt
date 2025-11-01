@@ -6,6 +6,7 @@ import it.polito.wa2.g19.crm.services.CustomerService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
+
 @RestController
 @RequestMapping("/API/customers")
 class CustomerController(private val customerService: CustomerService) {

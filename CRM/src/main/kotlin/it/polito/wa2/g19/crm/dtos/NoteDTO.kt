@@ -5,7 +5,7 @@ import java.time.LocalDateTime
 
 
 data class NoteDTO(
-    val id : Long,
+    val id : Long = 0,
     val title : String,
     val createdAt : LocalDateTime,
     val description : String?,
@@ -17,10 +17,3 @@ data class NoteDTO(
         description = this.description,
     )
 }
-
-fun Note.toDTO() = NoteDTO(
-    id = this.id,
-    title = this.title,
-    createdAt = this.createdAt,
-    description = this.description,
-)

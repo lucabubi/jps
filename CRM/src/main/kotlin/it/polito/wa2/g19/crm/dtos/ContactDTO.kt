@@ -10,6 +10,7 @@ data class ContactDTO (
     val surname: String,
     val ssn: String? = null,
     val region: Region,
+    var notes: Set<NoteDTO> = emptySet(),
     val category: Category = Category.UNKNOWN,
     val emails: Set<EmailDTO> = emptySet(),
     val addresses: Set<AddressDTO> = emptySet(),
@@ -43,6 +44,7 @@ data class ContactDTO (
             category = this.category,
             region = this.region
         )
+        newContact.notes = this.notes.map { it.toEntity() }.toMutableSet()
         newContact.emails = this.emails.map { it.toEntity(newContact) }.toMutableSet()
         newContact.telephones = this.telephones.map { it.toEntity(newContact) }.toMutableSet()
         newContact.addresses = this.addresses.map { it.toEntity(newContact) }.toMutableSet()

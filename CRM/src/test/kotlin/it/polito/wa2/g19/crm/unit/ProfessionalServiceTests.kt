@@ -43,11 +43,12 @@ class ProfessionalServiceTests {
                 emails= emptySet(),
                 addresses= emptySet(),
                 telephones= emptySet(),
-                region = Region.NA),
-            notes = listOf(
-                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
+                region = Region.NA,
+                notes = setOf(
+                    NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    )
+                ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
@@ -60,8 +61,8 @@ class ProfessionalServiceTests {
 
         // Act
         val result = professionalService.createProfessional(professionalDTO)
-        val capturedNotes = professionalSlot.captured.notes.sortedBy { it.id }
-        val expectedNotes = professionalDTO.notes.map { it.toEntity() }.sortedBy { it.id }
+        val capturedNotes = professionalSlot.captured.contact.notes.sortedBy { it.id }
+        val expectedNotes = professionalDTO.contact.notes.map { it.toEntity() }.sortedBy { it.id }
         // Assert
         verify { professionalRepository.save(any()) }
         assertEquals(professionalDTO, result)
@@ -92,15 +93,15 @@ class ProfessionalServiceTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
-            region = Region.NA
+            region = Region.NA,
+            notes = setOf(
+                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            )
         )
         val professionalDTO = ProfessionalDTO(
             id = professionalId,
             contact = contactDTO,
-            notes = listOf(
-                NoteDTO(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
             skills = emptySet(),
             dailyRate = 100f,
             employmentState = Professional.State.AVAILABLE_FOR_WORK,
@@ -135,11 +136,11 @@ class ProfessionalServiceTests {
                     emails = mutableSetOf(),
                     addresses = mutableSetOf(),
                     telephones = mutableSetOf(),
-                    region = Region.NA
-                ),
-                notes = mutableSetOf(
-                    Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                    Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    region = Region.NA,
+                    notes = mutableSetOf(
+                        Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                        Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    )
                 ),
                 skills = emptySet(),
                 dailyRate = 100f,
@@ -208,7 +209,11 @@ class ProfessionalServiceTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
-            region = Region.NA
+            region = Region.NA,
+            notes = setOf(
+                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            )
         )
         val contactDTO2 = ContactDTO(
             id = 2L,
@@ -218,23 +223,19 @@ class ProfessionalServiceTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
-            region = Region.NA
+            region = Region.NA,
+            notes = setOf(
+                NoteDTO(id = 11L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 12L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            )
         )
         val professionalDTO1 = ProfessionalDTO(
             id = 1L,
             contact = contactDTO1,
-            notes = listOf(
-                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
         )
         val professionalDTO2 = ProfessionalDTO(
             id = 2L,
             contact = contactDTO2,
-            notes = listOf(
-                NoteDTO(id = 11L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 12L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
         )
         val professionals = listOf(professionalDTO1.toEntity(), professionalDTO2.toEntity())
         val pageable = PageRequest.of(0, 5)
@@ -260,10 +261,11 @@ class ProfessionalServiceTests {
                 emails= mutableSetOf(),
                 addresses= mutableSetOf(),
                 telephones= mutableSetOf(),
-                region = Region.NA),
+                region = Region.NA,
                 notes = mutableSetOf(
                     Note(id = 13L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
                     Note(id = 14L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                )
             ),
             skills = emptySet(),
             dailyRate = 100f,

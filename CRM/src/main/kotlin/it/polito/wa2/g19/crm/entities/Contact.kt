@@ -14,6 +14,8 @@ class Contact (
     var region: Region,
     var category: Category = Category.UNKNOWN,
     @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
+    var notes: MutableSet<Note> = mutableSetOf(),
+    @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
     var emails: MutableSet<Email> = mutableSetOf(),
     @OneToMany(mappedBy = "contact", cascade = [CascadeType.ALL])
     var addresses: MutableSet<Address> = mutableSetOf(),
@@ -28,6 +30,7 @@ class Contact (
         ssn = this.ssn,
         region = this.region,
         category = this.category,
+        notes = this.notes.map { it.toDTO() }.toSet(),
         emails = this.emails.map { it.toDTO() }.toSet(),
         addresses = this.addresses.map { it.toDTO() }.toSet(),
         telephones = this.telephones.map { it.toDTO() }.toSet()

@@ -1,10 +1,11 @@
 package it.polito.wa2.g19.crm.services
 
+import it.polito.wa2.g19.crm.config.SecurityConfig
 import it.polito.wa2.g19.crm.dtos.CreateJobOfferDTO
 import it.polito.wa2.g19.crm.dtos.CustomerMinimalDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferDTO
 import it.polito.wa2.g19.crm.dtos.JobOfferUpdateDTO
-import it.polito.wa2.g19.crm.dtos.toDTO
+import it.polito.wa2.g19.crm.dtos.NoteDTO
 import it.polito.wa2.g19.crm.entities.JobOffer
 import it.polito.wa2.g19.crm.entities.Professional
 import it.polito.wa2.g19.crm.exceptions.*
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import mu.KotlinLogging
+import java.time.LocalDateTime
 
 @Service
 @Transactional
@@ -27,22 +29,28 @@ class JobOfferServiceImpl(
     override fun createJobOffer(createJobOfferDTO: CreateJobOfferDTO): JobOfferDTO {
         val customer = customerRepository.findById(createJobOfferDTO.customerId)
             .orElseThrow { CustomerNotFoundException("Customer with id ${createJobOfferDTO.customerId} not found") }
-
+        val noteCreated = listOf(NoteDTO(
+            title = "Operator ${SecurityConfig.SecurityUtils.getUserFullName()} created a new job offer",
+            createdAt = LocalDateTime.now(),
+            description = null,
+        ))
         val jobOffer = JobOfferDTO(
             description = createJobOfferDTO.description,
             title = createJobOfferDTO.title,
             duration = createJobOfferDTO.duration,
-            notes = createJobOfferDTO.notes,
+            notes = noteCreated,
             requiredSkills = createJobOfferDTO.requiredSkills,
             customer = CustomerMinimalDTO(
                 id = customer.id,
                 contact = customer.contact.toDTO(),
-                notes = customer.notes.map { it.toDTO() },
             )
         ).toEntity()
         logger.info("Creating job offer: $jobOffer")
         val savedJobOffer = jobOfferRepository.save(jobOffer)
         jobOffer.notes.map { noteRepository.save(it) }.toMutableSet()
+        noteCreated.forEach {
+            noteRepository.save(it.toEntity())
+        }
         logger.info("Job offer saved: $savedJobOffer ${savedJobOffer.customer.contact.id}")
         return savedJobOffer.toDTO()
     }

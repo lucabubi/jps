@@ -25,12 +25,12 @@ export type Contact = {
     emails: Email[];
     addresses: Address[];
     telephones: Telephone[];
+    notes: Note[];
 };
 
 export type Professional = {
     id: number;
     contact: Contact;
-    notes: string[];
     skills: string[]; // Set server side -> JSON array
     dailyRate: number;
     employmentState: "EMPLOYED" | "AVAILABLE_FOR_WORK" | "NOT_AVAILABLE";
@@ -40,7 +40,6 @@ export type Professional = {
 export type Customer = {
     id: number;
     contact: Contact;
-    notes: string[];
     jobOffers: JobOffer[];
 };
 
@@ -49,8 +48,7 @@ export type Note = {
     title: string;
     description: string;
     createdAt: string;
-    customer: Customer | null;
-    professional: Professional | null;
+    contact: Contact | null;
     jobOffer: JobOffer | null;
 }
 

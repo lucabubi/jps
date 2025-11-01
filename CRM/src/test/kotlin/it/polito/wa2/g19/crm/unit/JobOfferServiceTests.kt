@@ -215,9 +215,8 @@ class JobOfferServiceTests {
         )
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA, notes = mutableSetOf()),
             jobOffers = jobOffersSet,
-            notes = mutableSetOf()
         )
 
 
@@ -292,8 +291,7 @@ class JobOfferServiceTests {
 
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.APAC),
-            notes = mutableSetOf(),
+            contact = Contact(id = 1L, name = "Jane", surname = "Austen", region = Region.APAC, notes = mutableSetOf()),
             jobOffers = jobOffersSet,
             skills = emptySet(),
         )
@@ -380,8 +378,7 @@ class JobOfferServiceTests {
         val pageable = PageRequest.of(0, 5)
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
-            notes = mutableSetOf(),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM, notes = mutableSetOf()),
             jobOffers = mutableSetOf()
         )
         val jobOffersList = listOf(
@@ -442,8 +439,7 @@ class JobOfferServiceTests {
         val pageable = PageRequest.of(0, 5)
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
-            notes = mutableSetOf(),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM, notes = mutableSetOf()),
             jobOffers = mutableSetOf()
         )
         val jobOffersList = listOf(
@@ -505,15 +501,13 @@ class JobOfferServiceTests {
 
         val customer = Customer(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM),
-            notes = mutableSetOf(),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.LATAM, notes = mutableSetOf()),
             jobOffers = mutableSetOf()
         )
 
         val professional = Professional(
             id = 1L,
-            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA),
-            notes = mutableSetOf(),
+            contact = Contact(id = 1L, name = "John", surname = "Doe", region = Region.EMEA, notes = mutableSetOf()),
             jobOffers = mutableSetOf()
         )
 

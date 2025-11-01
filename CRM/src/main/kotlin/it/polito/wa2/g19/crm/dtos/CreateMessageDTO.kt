@@ -9,6 +9,4 @@ data class CreateMessageDTO (
     val channel: Channel,
     val priority: Priority?,
     val history: List<MessageHistoryDTO> = emptyList()
-){
-
-}
+)

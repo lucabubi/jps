@@ -33,11 +33,12 @@ class CustomerServiceTests {
                 emails= emptySet(),
                 addresses= emptySet(),
                 telephones= emptySet(),
-                region = Region.NA),
-            notes = listOf(
-                NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
+                region = Region.NA,
+                notes = setOf(
+                    NoteDTO(id = 1L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    NoteDTO(id = 2L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                    ),
+                ),
             jobOffers = emptySet()
         )
         val customerSlot = slot<Customer>()
@@ -52,7 +53,7 @@ class CustomerServiceTests {
         verify { customerRepository.save(any()) }
         assertEquals(customerDTO, result)
         assertEquals(customerDTO.contact, customerSlot.captured.contact.toDTO())
-        assertEquals(customerDTO.notes, customerSlot.captured.notes.map { it.toDTO() })
+        assertEquals(customerDTO.contact.notes, customerSlot.captured.contact.notes.map { it.toDTO() })
         assertEquals(customerDTO.jobOffers, customerSlot.captured.jobOffers.map { it.toDTO() }.toSet())
     }
 
@@ -68,11 +69,11 @@ class CustomerServiceTests {
                 emails= mutableSetOf(),
                 addresses= mutableSetOf(),
                 telephones= mutableSetOf(),
-                region = Region.NA),
-            notes = mutableSetOf(
-                Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 3L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 4L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),),
             jobOffers = mutableSetOf()
         )
         val customer2 = Customer(
@@ -83,11 +84,11 @@ class CustomerServiceTests {
                 emails= mutableSetOf(),
                 addresses= mutableSetOf(),
                 telephones= mutableSetOf(),
-                region = Region.NA),
-            notes = mutableSetOf(
-                Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 5L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 6L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),),
             jobOffers = mutableSetOf()
         )
         val customers = listOf(customer1, customer2)
@@ -114,11 +115,11 @@ class CustomerServiceTests {
                 emails= mutableSetOf(),
                 addresses= mutableSetOf(),
                 telephones= mutableSetOf(),
-                region = Region.NA),
-            notes = mutableSetOf(
-                Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
+                region = Region.NA,
+                notes = mutableSetOf(
+                    Note(id = 7L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                    Note(id = 8L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+                ),),
             jobOffers = mutableSetOf()
         )
         every { customerRepository.findById(id) } returns Optional.of(customer)
@@ -159,15 +160,15 @@ class CustomerServiceTests {
             emails = emptySet(),
             addresses = emptySet(),
             telephones = emptySet(),
-            region = Region.NA
+            region = Region.NA,
+            notes = setOf(
+                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
+                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
+            ),
         )
         val customerDTO = CustomerDTO(
             id = customerId,
             contact = contactDTO,
-            notes = listOf(
-                NoteDTO(id = 9L, title = "Note 1", description = "Description 1", createdAt = LocalDateTime.now()),
-                NoteDTO(id = 10L, title = "Note 2", description = "Description 2", createdAt = LocalDateTime.now())
-            ),
             jobOffers = emptySet()
         )
         //given
@@ -180,7 +181,7 @@ class CustomerServiceTests {
         //then
         verify { customerRepository.findById(customerId) }
         verify { customerRepository.save(any()) }
-        assertEquals(updatedNotes, result.notes)
+        assertEquals(updatedNotes, result.contact.notes)
     }
 
     @Test
